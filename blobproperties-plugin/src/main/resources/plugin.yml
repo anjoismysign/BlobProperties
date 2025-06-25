@@ -1,11 +1,10 @@
 name: BlobProperties
-main: us.mytheria.blobproperties.BlobProperties
+main: io.github.anjoismysign.blobproperties.BlobProperties
 version: ${project.version}
-authir: [ mcclovin, promorrom ]
-api-version: 1.17
+authir: [ promorrom ]
+api-version: 1.21.4
 depend: [ BlobLib ]
-softdepend:
-  - BlobRP
 commands:
-  publicproperty:
+  properties:
     description: base command
+    aliases: [ bp ]

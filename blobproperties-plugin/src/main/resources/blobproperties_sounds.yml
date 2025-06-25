@@ -1,67 +1,67 @@
 Property:
   Container-Open:
-    Sound: BLOCK_ENDER_CHEST_OPEN
+    Sound: block.ender_chest.open
     Volume: 0.65
     Pitch: 0.8
     Audience: PLAYER
   Container-Close:
-    Sound: BLOCK_ENDER_CHEST_CLOSE
+    Sound: block.ender_chest.close
     Volume: 0.65
     Pitch: 0.8
     Audience: PLAYER
   Door-Inside:
-    Sound: BLOCK_IRON_DOOR_OPEN
+    Sound: block.iron_door.open
     Volume: 1.0
     Pitch: 0.8
     Audience: PLAYER
   Door-Outside:
-    Sound: BLOCK_IRON_DOOR_CLOSE
+    Sound: block.iron_door.close
     Volume: 1.0
     Pitch: 0.8
     Audience: PLAYER
   Purchased:
-    Sound: BLOCK_NOTE_BLOCK_PLING
+    Sound: block.note_block.pling
     Volume: 1.0
     Pitch: 1.25
     Audience: PLAYER
   Teleport:
-    Sound: ENTITY_ENDERMAN_TELEPORT
+    Sound: entity.enderman.teleport
     Volume: 1.0
     Pitch: 1.25
     Audience: PLAYER
   Sold:
-    Sound: BLOCK_NOTE_BLOCK_PLING
+    Sound: block.note_block.pling
     Volume: 1.0
     Pitch: 1.25
     Audience: PLAYER
   Denied:
-    Sound: BLOCK_NOTE_BLOCK_BASS
+    Sound: block.note_block.bass
     Volume: 1.0
     Pitch: 1.25
     Audience: PLAYER
   Already-Owner:
-    Sound: BLOCK_NOTE_BLOCK_BASS
+    Sound: block.note_block.bass
     Volume: 1.0
     Pitch: 1.25
     Audience: PLAYER
   Not-Owner:
-    Sound: BLOCK_NOTE_BLOCK_BASS
+    Sound: block.note_block.bass
     Volume: 1.0
     Pitch: 1.25
     Audience: PLAYER
   Not-Enough-Money:
-    Sound: BLOCK_NOTE_BLOCK_BASS
+    Sound: block.note_block.bass
     Volume: 1.0
     Pitch: 1.25
     Audience: PLAYER
 BlobProprietor:
   Invited:
-    Sound: BLOCK_NOTE_BLOCK_CHIME
+    Sound: block.note_block.chime
     Volume: 1.0
     Pitch: 1.0
     Audience: PLAYER
   Received-Invite:
-    Sound: BLOCK_NOTE_BLOCK_CHIME
+    Sound: block.note_block.chime
     Volume: 1.0
     Pitch: 1.5
     Audience: PLAYER

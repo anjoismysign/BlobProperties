@@ -2,14 +2,26 @@ package io.github.anjoismysign.blobproperties.api;
 
 import org.jetbrains.annotations.NotNull;
 
-public interface PropertySettings {
+public interface PropertyMeta {
 
-    enum Type {
-        PUBLIC,
-        PRIVATE
-    }
-
+    /**
+     * Gets the type of the property.
+     *
+     * @return the property type
+     */
     @NotNull
-    String getName();
+    PropertyMetaType type();
+
+    /**
+     * Gets the property type name
+     *
+     * @return the property type name
+     */
+    @NotNull
+    String typeName();
+
+    default boolean equals(@NotNull PropertyMeta other) {
+        return type().equals(other.type()) && typeName().equals(other.typeName());
+    }
 
 }

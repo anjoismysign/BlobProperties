@@ -1,12 +1,14 @@
 package io.github.anjoismysign.blobproperties.director.manager;
 
-import org.bukkit.Bukkit;
-import us.mytheria.bloblib.managers.BlobPlugin;
+import io.github.anjoismysign.bloblib.managers.BlobPlugin;
 import io.github.anjoismysign.blobproperties.director.PropertiesManager;
 import io.github.anjoismysign.blobproperties.director.PropertiesManagerDirector;
-import io.github.anjoismysign.blobproperties.numberformats.*;
-
-import java.util.Optional;
+import io.github.anjoismysign.blobproperties.numberformat.BlobTycoon;
+import io.github.anjoismysign.blobproperties.numberformat.Formatter;
+import io.github.anjoismysign.blobproperties.numberformat.Generic;
+import io.github.anjoismysign.blobproperties.numberformat.Integers;
+import io.github.anjoismysign.blobproperties.numberformat.Vault;
+import org.bukkit.Bukkit;
 
 public class ConfigManager extends PropertiesManager {
 
@@ -42,10 +44,6 @@ public class ConfigManager extends PropertiesManager {
                 this.formatter = new Generic();
                 break;
         }
-    }
-
-    public String format(double amount, Optional<String> currency) {
-        return formatter.format(amount, currency);
     }
 
     public String format(double amount) {

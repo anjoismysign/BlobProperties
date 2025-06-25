@@ -1,18 +1,23 @@
 package io.github.anjoismysign.blobproperties.director;
 
+import io.github.anjoismysign.bloblib.entities.BlobSerializableManager;
+import io.github.anjoismysign.blobproperties.api.ProprietorManager;
+import io.github.anjoismysign.blobproperties.api.SerializableProprietor;
+import io.github.anjoismysign.blobproperties.entity.InternalParty;
+import io.github.anjoismysign.blobproperties.entity.SimpleInstanceProprietor;
+import io.github.anjoismysign.blobproperties.event.ProprietorJoinSessionEvent;
+import io.github.anjoismysign.blobproperties.event.ProprietorQuitSessionEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import us.mytheria.bloblib.entities.BlobSerializableManager;
-import io.github.anjoismysign.blobproperties.entities.BPProprietor;
-import io.github.anjoismysign.blobproperties.entities.SimpleInstanceProprietor;
-import io.github.anjoismysign.blobproperties.entities.publicproperty.PublicParty;
-import io.github.anjoismysign.blobproperties.events.ProprietorJoinSessionEvent;
-import io.github.anjoismysign.blobproperties.events.ProprietorQuitSessionEvent;
 
+import java.util.Objects;
 import java.util.UUID;
 
-public class SimpleInstanceProprietorManager extends BlobSerializableManager<SimpleInstanceProprietor> {
+public class SimpleInstanceProprietorManager
+        extends BlobSerializableManager<SimpleInstanceProprietor>
+        implements ProprietorManager {
     private final PropertiesManagerDirector director;
 
     public SimpleInstanceProprietorManager(PropertiesManagerDirector managerDirector) {
@@ -42,7 +47,7 @@ public class SimpleInstanceProprietorManager extends BlobSerializableManager<Sim
     }
 
     private void reloadSync() {
-        director.getPublicPartyManager().getPublicParties().forEach(PublicParty::disband);
+        director.getPublicPartyManager().getInternalParties().forEach(InternalParty::disband);
         super.serializables.values().forEach(proprietor -> {
             if (!proprietor.isValid())
                 return;
@@ -51,11 +56,12 @@ public class SimpleInstanceProprietorManager extends BlobSerializableManager<Sim
     }
 
     @Nullable
-    public BPProprietor getProprietor(UUID id) {
+    public SerializableProprietor getUUIDProprietor(@NotNull UUID id) {
         return super.isBlobSerializable(id).orElse(null);
     }
 
-    public BPProprietor getProprietor(Player player) {
-        return getProprietor(player.getUniqueId());
+    public @NotNull SerializableProprietor getPlayerProprietor(@NotNull Player player) {
+        UUID uuid = player.getUniqueId();
+        return Objects.requireNonNull(getUUIDProprietor(uuid), "Player not inside cache '" + uuid + "'");
     }
 }

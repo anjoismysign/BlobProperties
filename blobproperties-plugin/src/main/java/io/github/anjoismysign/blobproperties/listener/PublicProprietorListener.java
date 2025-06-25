@@ -1,9 +1,9 @@
-package io.github.anjoismysign.blobproperties.listeners;
+package io.github.anjoismysign.blobproperties.listener;
 
 import io.github.anjoismysign.blobproperties.BlobPropertiesInternalAPI;
 import io.github.anjoismysign.blobproperties.api.Proprietor;
 import io.github.anjoismysign.blobproperties.director.PropertiesManagerDirector;
-import io.github.anjoismysign.blobproperties.events.ProprietorJoinSessionEvent;
+import io.github.anjoismysign.blobproperties.event.ProprietorJoinSessionEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;

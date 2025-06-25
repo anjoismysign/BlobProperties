@@ -1,4 +1,4 @@
-package io.github.anjoismysign.blobproperties.enums;
+package io.github.anjoismysign.blobproperties.entity;
 
 public enum ItemType {
     PUBLIC_PROPERTY_DOOR_MANAGER,

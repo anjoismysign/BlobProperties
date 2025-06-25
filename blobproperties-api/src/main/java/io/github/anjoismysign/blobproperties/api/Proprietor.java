@@ -1,4 +1,4 @@
-package io.github.anjoismysign.blobproperties;
+package io.github.anjoismysign.blobproperties.api;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -7,7 +7,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Consumer;
 
 public interface Proprietor {
     /**
@@ -19,18 +18,18 @@ public interface Proprietor {
     boolean isValid();
 
     /**
+     * Retrieves the player.
+     *
+     * @return The player.
+     */
+    Player getPlayer();
+
+    /**
      * Retrieves the unique identifier of the proprietor.
      *
      * @return The unique identifier of the proprietor.
      */
     UUID getUniqueId();
-
-    /**
-     * Checks if the player is inside a public property.
-     *
-     * @return True if the player is inside a public property. False otherwise.
-     */
-    boolean isInsidePublicProperty();
 
     /**
      * Checks if the player is attending a party.
@@ -48,7 +47,10 @@ public interface Proprietor {
     default boolean isPartyLeader() {
         if (!isAttendingParty())
             return false;
-        return getCurrentlyAttending().getOwnerName().equals(getPlayer().getName());
+        @Nullable Party party = getCurrentlyAttending();
+        if (party == null)
+            return false;
+        return party.getOwner().getUniqueId().equals(getUniqueId());
     }
 
     /**
@@ -80,16 +82,6 @@ public interface Proprietor {
     Party getCurrentlyAttending();
 
     /**
-     * Runs a consumer if the player is attending a party.
-     *
-     * @param consumer The consumer to run.
-     */
-    default void ifPartying(Consumer<Party> consumer) {
-        if (isAttendingParty())
-            consumer.accept(getCurrentlyAttending());
-    }
-
-    /**
      * Checks if the player has a pending invite from the host.
      *
      * @param host The host of the invite.
@@ -105,49 +97,59 @@ public interface Proprietor {
      *
      * @return The pending invites of the player.
      */
+    @NotNull
     Set<String> getPendingInvites();
 
     /**
      * Checks if is attending the same party as another proprietor.
      *
-     * @param proprietor The proprietor to check.
+     * @param other The proprietor to check.
      * @return True if the proprietors are attending the same party.
      */
-    default boolean isAttendingSameParty(Proprietor proprietor) {
-        if (proprietor == null)
+    default boolean isAttendingSameParty(Proprietor other) {
+        if (other == null)
             return false;
-        if (!proprietor.isAttendingParty())
+        if (!other.isAttendingParty())
             return false;
         if (!isAttendingParty())
             return false;
-        return getCurrentlyAttending().getOwnerName().equals(proprietor.getCurrentlyAttending().getOwnerName());
+        @Nullable Party party = getCurrentlyAttending();
+        if (party == null)
+            return false;
+        return party.getOwner().getUniqueId().equals(other.getCurrentlyAttending().getOwner().getUniqueId());
     }
 
     /**
-     * Checks if the proprietor owns a public property.
+     * Checks if the proprietor owns a property.
      *
-     * @param property The public property to check.
-     * @return True if the proprietor owns the public property.
+     * @param property The property to check.
+     * @return True if the proprietor owns the property.
      */
-    boolean ownsPublicProperty(@NotNull Property property);
+    boolean ownsProperty(@NotNull Property property);
 
     /**
-     * Steps into a public property.
+     * Steps into a property.
      * This will set the proprietor's current property to the specified property
      * and update their last known property.
      *
      * @param type     The type of property to step into.
-     * @param id       The identifier of the public property to step into.
+     * @param id       The identifier of the property to step into.
      * @param location The location to step into.
      *                 Can be null and defaults to the property location.
      */
-    void stepIn(@NotNull PropertyType type, @NotNull String id, @Nullable Location location);
+    void stepIn(@NotNull PropertyMeta type, @NotNull String id, @Nullable Location location);
 
     /**
-     * Steps out of the current public property.
+     * Steps out of the current property.
      * This will remove the proprietor from the property and update their last known property.
      *
      * @param location The location to step out to, can be null if not specified.
      */
     void stepOut(@Nullable Location location);
+
+    void addProperty(@NotNull Property property);
+
+    void removeProperty(@NotNull Property property);
+
+    Set<Property> getProperties();
 }

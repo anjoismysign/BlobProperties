@@ -1,7 +1,7 @@
-package io.github.anjoismysign.blobproperties.entities;
+package io.github.anjoismysign.blobproperties.entity;
 
-import org.bukkit.NamespacedKey;
 import io.github.anjoismysign.blobproperties.BlobProperties;
+import org.bukkit.NamespacedKey;
 
 public class PropertiesStaticFields {
     private final static BlobProperties main = BlobProperties.getInstance();

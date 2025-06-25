@@ -1,5 +1,7 @@
 package io.github.anjoismysign.blobproperties;
 
+import io.github.anjoismysign.blobproperties.api.Proprietor;
+import io.github.anjoismysign.blobproperties.director.PropertiesManagerDirector;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
@@ -7,35 +9,28 @@ import org.bukkit.block.data.Openable;
 import org.bukkit.block.data.type.Door;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
-import io.github.anjoismysign.blobproperties.director.PropertiesManagerDirector;
-import io.github.anjoismysign.blobproperties.api.Proprietor;
 
-import java.util.Optional;
 import java.util.UUID;
 
-public class BlobPropertiesAPI {
-    private static BlobPropertiesAPI instance;
+public class BlobPropertiesInternalAPI {
+    private static BlobPropertiesInternalAPI instance;
     private final PropertiesManagerDirector director;
 
-    private BlobPropertiesAPI(PropertiesManagerDirector director) {
-        this.director = director;
-    }
-
-    public static BlobPropertiesAPI getInstance(PropertiesManagerDirector director) {
+    public static BlobPropertiesInternalAPI getInstance(PropertiesManagerDirector director) {
         if (instance == null) {
             if (director == null)
                 throw new NullPointerException("injected dependency is null");
-            BlobPropertiesAPI.instance = new BlobPropertiesAPI(director);
+            BlobPropertiesInternalAPI.instance = new BlobPropertiesInternalAPI(director);
         }
         return instance;
     }
 
-    public static BlobPropertiesAPI getInstance() {
+    public static BlobPropertiesInternalAPI getInstance() {
         return getInstance(null);
     }
 
-    public String format(double amount, Optional<String> currency) {
-        return director.getConfigManager().format(amount, currency);
+    private BlobPropertiesInternalAPI(PropertiesManagerDirector director) {
+        this.director = director;
     }
 
     public String format(double amount) {
@@ -45,7 +40,7 @@ public class BlobPropertiesAPI {
     @Nullable
     public Proprietor getProprietor(UUID uuid) {
         return director
-                .getProprietorManager().getProprietor(uuid);
+                .getProprietorManager().getUUIDProprietor(uuid);
     }
 
     @Nullable
@@ -84,4 +79,5 @@ public class BlobPropertiesAPI {
         openable.setOpen(open);
         player.sendBlockChange(block.getLocation(), openable);
     }
+
 }

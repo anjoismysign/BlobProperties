@@ -1,4 +1,4 @@
-package io.github.anjoismysign.blobproperties.libs;
+package io.github.anjoismysign.blobproperties.library;
 
 import javax.sql.rowset.serial.SerialBlob;
 import java.io.ByteArrayOutputStream;

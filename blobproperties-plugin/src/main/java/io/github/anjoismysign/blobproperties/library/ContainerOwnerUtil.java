@@ -1,4 +1,4 @@
-package io.github.anjoismysign.blobproperties.libs;
+package io.github.anjoismysign.blobproperties.library;
 
 import io.github.anjoismysign.bloblib.utilities.ItemStackUtil;
 import org.bukkit.inventory.ItemStack;

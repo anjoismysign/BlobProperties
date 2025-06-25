@@ -1,8 +1,8 @@
-package io.github.anjoismysign.blobproperties.entities;
+package io.github.anjoismysign.blobproperties.entity;
 
 import io.github.anjoismysign.bloblib.entities.inventory.BlobInventoryTracker;
-import io.github.anjoismysign.blobproperties.entities.publicproperty.SimpleInternalProperty;
+import org.jetbrains.annotations.NotNull;
 
-public record InventoryOperation(BlobInventoryTracker tracker,
-                                 SimpleInternalProperty property) {
+public record InventoryOperation(@NotNull BlobInventoryTracker tracker,
+                                 @NotNull InternalProperty property) {
 }

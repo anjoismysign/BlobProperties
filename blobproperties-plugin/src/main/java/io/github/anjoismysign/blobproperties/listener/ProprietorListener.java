@@ -1,4 +1,4 @@
-package io.github.anjoismysign.blobproperties.listeners;
+package io.github.anjoismysign.blobproperties.listener;
 
 import io.github.anjoismysign.blobproperties.BlobProperties;
 import io.github.anjoismysign.blobproperties.director.PropertiesManagerDirector;

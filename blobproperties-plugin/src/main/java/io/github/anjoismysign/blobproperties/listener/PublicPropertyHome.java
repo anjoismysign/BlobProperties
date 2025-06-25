@@ -1,4 +1,4 @@
-package io.github.anjoismysign.blobproperties.listeners;
+package io.github.anjoismysign.blobproperties.listener;
 
 import io.github.anjoismysign.bloblib.api.BlobLibEconomyAPI;
 import io.github.anjoismysign.bloblib.api.BlobLibInventoryAPI;

@@ -1,4 +1,4 @@
-package io.github.anjoismysign.blobproperties.numberformats;
+package io.github.anjoismysign.blobproperties.numberformat;
 
 import java.util.Optional;
 

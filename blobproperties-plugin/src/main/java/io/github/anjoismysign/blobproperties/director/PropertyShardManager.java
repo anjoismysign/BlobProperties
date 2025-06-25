@@ -1,6 +1,13 @@
 package io.github.anjoismysign.blobproperties.director;
 
+import io.github.anjoismysign.bloblib.managers.asset.BukkitIdentityManager;
+import io.github.anjoismysign.blobproperties.BlobProperties;
 import io.github.anjoismysign.blobproperties.api.Property;
+import io.github.anjoismysign.blobproperties.api.PropertyManager;
+import io.github.anjoismysign.blobproperties.api.PropertyMeta;
+import io.github.anjoismysign.blobproperties.api.PropertyMetaType;
+import io.github.anjoismysign.blobproperties.entity.InternalProperty;
+import io.github.anjoismysign.blobproperties.entity.PropertyShard;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -9,33 +16,78 @@ import org.bukkit.block.data.Bisected;
 import org.bukkit.block.data.type.Door;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import io.github.anjoismysign.blobproperties.entities.PropertyShard;
-import io.github.anjoismysign.blobproperties.entities.publicproperty.PublicProperty;
 
-import java.util.HashMap;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 
-public record PropertyManager
-        (@NotNull ConcurrentMap<String, PropertyShard> propertyAdministrator)
-{
+public record PropertyShardManager(
+        @NotNull ConcurrentMap<String, PropertyShard> shards)
+        implements PropertyManager {
 
-    public PropertyManager(){
+    private static PropertyShardManager INSTANCE;
+
+    public static PropertyShardManager getInstance() {
+        if (INSTANCE == null)
+            INSTANCE = new PropertyShardManager();
+        return INSTANCE;
+    }
+
+    public PropertyShardManager() {
         this(new ConcurrentHashMap<>());
     }
 
+    @Override
+    public @NotNull Set<Property> getPropertiesByMeta(@NotNull PropertyMeta meta) {
+        Objects.requireNonNull(meta, "'meta' cannot be null");
+        return shards.values().stream()
+                .map(shard -> shard.getPropertiesByMeta(meta))
+                .flatMap(Collection::stream)
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    public @Nullable Property getPropertyByMeta(@NotNull PropertyMeta meta, @NotNull String identifier) {
+        return getPropertiesByMeta(meta).stream()
+                .filter(property -> property.identifier().equals(identifier))
+                .findFirst().orElse(null);
+    }
+
+    public void reload() {
+        shards.clear();
+        for (PropertyMetaType type : PropertyMetaType.values()) {
+            BukkitIdentityManager<InternalProperty> manager = BlobProperties.getInstance().getIdentityPropertyManager(type);
+            manager.reload();
+            manager.forEach(this::addProperty);
+        }
+    }
+
+    public void addProperty(@NotNull InternalProperty property) {
+        World world = property.getWorld();
+        String worldName = world.getName();
+        @Nullable PropertyShard shard = shards.get(worldName);
+        if (shard == null) {
+            shard = new PropertyShard(worldName);
+            shards.put(worldName, shard);
+        }
+        shard.addProperty(property);
+    }
 
     /**
      * @param block The block to check
      * @return The property the block is a part of, or null if it is not a part of any property
      */
     @Nullable
-    public Property isPublicDoor(Block block) {
+    public InternalProperty isDoor(Block block) {
         World world = block.getWorld();
-        if (!propertyAdministrator.containsKey(world.getName())) {
+        if (!shards.containsKey(world.getName())) {
             return null;
         }
-        PropertyShard shard = propertyAdministrator.get(world.getName());
+        PropertyShard shard = shards.get(world.getName());
         if (block.getType() == Material.IRON_DOOR) {
             Door door = (Door) block.getBlockData();
             if (door.getHalf() == Bisected.Half.TOP) {
@@ -43,19 +95,19 @@ public record PropertyManager
                 if (relative.getType() != Material.IRON_DOOR) {
                     return null;
                 }
-                return shard.getProperties()
+                return shard.getAllProperties()
                         .stream()
                         .filter(property -> property.containsDoor(relative))
                         .findFirst().orElse(null);
             } else {
-                return shard.getProperties()
+                return shard.getAllProperties()
                         .stream()
                         .filter(property -> property.containsDoor(block))
                         .findFirst().orElse(null);
             }
         }
         if (block.getType() == Material.IRON_TRAPDOOR) {
-            return shard.getProperties().stream()
+            return shard.getAllProperties().stream()
                     .filter(property -> property.containsDoor(block))
                     .findFirst().orElse(null);
         }
@@ -63,59 +115,29 @@ public record PropertyManager
     }
 
     @Nullable
-public Property isContainer(@NotNull Block block){
+    public InternalProperty isContainer(@NotNull Block block) {
         World world = block.getWorld();
-        if (!propertyAdministrator.containsKey(world.getName())) {
+        if (!shards.containsKey(world.getName())) {
             return null;
         }
-        PropertyShard shard = propertyAdministrator.get(world.getName());
-        return shard.getProperties()
+        PropertyShard shard = shards.get(world.getName());
+        return shard.getAllProperties()
                 .stream()
-                .filter(property->property.containsContainer(block))
+                .filter(property -> property.containsContainer(block))
                 .findFirst().orElse(null);
     }
 
+    @NotNull
+    public Map<String, InternalProperty> getProperties() {
+        return shards.values().stream()
+                .flatMap(shard -> shard.getAllProperties().stream())
+                .collect(ConcurrentHashMap::new, (map, property) -> map.put(property.identifier(), property), Map::putAll);
+    }
+
     @Nullable
-    public Property isPublicContainer(Block block) {
-        World world = block.getWorld();
-        if (!propertyAdministrator.containsKey(world.getName())) {
+    public InternalProperty getProperty(@Nullable String key) {
+        if (key == null)
             return null;
-        }
-        PropertyShard shard = propertyAdministrator.get(world.getName());
-        return shard.getProperties()
-                .stream()
-                .filter(property->property.containsContainer(block))
-                .findFirst().orElse(null);
-    }
-
-    public void addPublicProperty(PublicProperty property) {
-        World world = property.getWorld();
-        PropertyShard shard = propertyAdministrator.computeIfAbsent(world.getName(), k -> new PropertyShard(world));
-        shard.addProperty(property);
-        publicProperties.put(property.getKey(), property);
-    }
-
-
-    public void removePublicProperty(PublicProperty property) {
-        World world = property.getWorld();
-        if (!propertyAdministrator.containsKey(world.getName()))
-            return;
-        PropertyShard shard = propertyAdministrator.get(world.getName());
-        shard.removeProperty(property);
-        publicProperties.remove(property.getKey());
-    }
-
-    public HashMap<String, PublicProperty> getPublicProperties() {
-        return publicProperties;
-    }
-
-    @Nullable
-    public PublicProperty getPublicProperty(String key) {
-        return publicProperties.getOrDefault(key, null);
-    }
-
-    public void saveProperty(PublicProperty property) {
-        property.saveToFile(getManagerDirector()
-                .getPublicPropertyDirector().getObjectManager().getLoadFilesDirectory());
+        return getProperties().getOrDefault(key, null);
     }
 }

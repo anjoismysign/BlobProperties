@@ -1,4 +1,4 @@
-package io.github.anjoismysign.blobproperties.events;
+package io.github.anjoismysign.blobproperties.event;
 
 import io.github.anjoismysign.blobproperties.api.Proprietor;
 import org.bukkit.event.HandlerList;

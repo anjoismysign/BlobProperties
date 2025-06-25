@@ -1,19 +1,14 @@
 package io.github.anjoismysign.blobproperties.director;
 
-import us.mytheria.bloblib.entities.BlobPHExpansion;
-import us.mytheria.bloblib.entities.GenericManagerDirector;
-import us.mytheria.bloblib.entities.ObjectDirector;
+import io.github.anjoismysign.bloblib.entities.BlobPHExpansion;
+import io.github.anjoismysign.bloblib.entities.GenericManagerDirector;
 import io.github.anjoismysign.blobproperties.BlobProperties;
 import io.github.anjoismysign.blobproperties.director.manager.ConfigManager;
 import io.github.anjoismysign.blobproperties.director.manager.ListenerManager;
-import io.github.anjoismysign.blobproperties.entities.ProprietorPlaceholderExpansion;
-import io.github.anjoismysign.blobproperties.entities.publicproperty.PublicProperty;
-import io.github.anjoismysign.blobproperties.entities.publicproperty.PublicPropertyAdminCommand;
-import io.github.anjoismysign.blobproperties.entities.publicproperty.PublicPropertyCommand;
+import io.github.anjoismysign.blobproperties.entity.ProprietorPlaceholderExpansion;
 
 public class PropertiesManagerDirector extends GenericManagerDirector<BlobProperties> {
     private final LegacyFileManager legacyFileManager;
-
 
     public PropertiesManagerDirector(BlobProperties blobPlugin) {
         super(blobPlugin);
@@ -25,17 +20,9 @@ public class PropertiesManagerDirector extends GenericManagerDirector<BlobProper
         registerBlobInventory("PublicPropertyHome", "es_es/PublicPropertyHome");
         legacyFileManager = new LegacyFileManager(this);
         addManager("ItemStackManager", new ItemStackManager(this));
-        addManager("PropertyManager", new PropertyManager(this));
         addManager("ConfigManager", new ConfigManager(this));
-        addManager("PublicPartyManager", new PublicPartyManager(this));
+        addManager("PartyManager", InternalPartyManager.getInstance(this));
         addManager("ProprietorManager", new SimpleInstanceProprietorManager(this));
-        addDirector("PublicProperty", file -> PublicProperty.fromFile(file, this), false);
-        PublicPropertyCommand publicPropertyCommand = PublicPropertyCommand.getInstance(this);
-        PublicPropertyAdminCommand publicPropertyAdminCommand = PublicPropertyAdminCommand.getInstance(this);
-        getPublicPropertyDirector().addNonAdminChildTabCompleter(publicPropertyCommand::tabCompleter);
-        getPublicPropertyDirector().addNonAdminChildCommand(publicPropertyCommand::command);
-        getPublicPropertyDirector().addAdminChildCommand(publicPropertyAdminCommand::command);
-        getPublicPropertyDirector().addAdminChildTabCompleter(publicPropertyAdminCommand::tabCompleter);
         addManager("ListenerManager", new ListenerManager(this));
         instantiateProprietorExpansion();
     }
@@ -43,12 +30,7 @@ public class PropertiesManagerDirector extends GenericManagerDirector<BlobProper
     @Override
     public void reload() {
         getListenerManager().reload();
-        getPublicPropertyDirector().getObjectManager().values()
-                .forEach(getPropertyManager()::removePublicProperty);
-        getPublicPropertyDirector().reload();
-        getPublicPropertyDirector().whenObjectManagerFilesLoad(manager -> {
-            getProprietorManager().reload();
-        });
+        PropertyShardManager.getInstance().reload();
     }
 
     @Override
@@ -56,12 +38,8 @@ public class PropertiesManagerDirector extends GenericManagerDirector<BlobProper
         getProprietorManager().unload();
     }
 
-    public final PublicPartyManager getPublicPartyManager() {
-        return getManager("PublicPartyManager", PublicPartyManager.class);
-    }
-
-    public final ObjectDirector<PublicProperty> getPublicPropertyDirector() {
-        return getDirector("PublicProperty", PublicProperty.class);
+    public final InternalPartyManager getPublicPartyManager() {
+        return getManager("PartyManager", InternalPartyManager.class);
     }
 
     public final SimpleInstanceProprietorManager getProprietorManager() {
@@ -80,8 +58,8 @@ public class PropertiesManagerDirector extends GenericManagerDirector<BlobProper
         return getManager("ItemStackManager", ItemStackManager.class);
     }
 
-    public final PropertyManager getPropertyManager() {
-        return getManager("PropertyManager", PropertyManager.class);
+    public final PropertyShardManager getPropertyShardManager() {
+        return PropertyShardManager.getInstance();
     }
 
     public LegacyFileManager getLegacyFileManager() {
@@ -92,7 +70,7 @@ public class PropertiesManagerDirector extends GenericManagerDirector<BlobProper
         ProprietorPlaceholderExpansion expansion = new ProprietorPlaceholderExpansion(this);
         if (!isPlaceholderAPIEnabled())
             return;
-        BlobPHExpansion x = new BlobPHExpansion(this.getPlugin(), "proprietor");
-        expansion.consumer().accept(x);
+        BlobPHExpansion phExpansion = new BlobPHExpansion(this.getPlugin(), "proprietor");
+        expansion.consumer().accept(phExpansion);
     }
 }

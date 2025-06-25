@@ -1,4 +1,4 @@
-package io.github.anjoismysign.blobproperties.numberformats;
+package io.github.anjoismysign.blobproperties.numberformat;
 
 import io.github.anjoismysign.bloblib.api.BlobLibEconomyAPI;
 import io.github.anjoismysign.bloblib.vault.multieconomy.ElasticEconomy;

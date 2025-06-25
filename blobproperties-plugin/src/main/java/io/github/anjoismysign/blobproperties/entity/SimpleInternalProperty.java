@@ -1,16 +1,9 @@
-package io.github.anjoismysign.blobproperties.entities.publicproperty;
+package io.github.anjoismysign.blobproperties.entity;
 
-import io.github.anjoismysign.blobproperties.entities.InternalProperty;
-import io.github.anjoismysign.blobproperties.entities.Point3D;
-import io.github.anjoismysign.holoworld.asset.IdentityGenerator;
 import org.bukkit.util.BlockVector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import io.github.anjoismysign.blobproperties.entities.Container;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -18,20 +11,23 @@ public abstract class SimpleInternalProperty
         implements InternalProperty {
     private final @NotNull String identifier;
     private final double price;
-    private final @Nullable String currency;
+    private final @NotNull String currency;
     private final @NotNull Set<BlockVector> doors;
     private final @NotNull Map<BlockVector, Container> containers;
+    private final boolean useDefaultLore;
 
     public SimpleInternalProperty(@NotNull String identifier,
                                   double price,
-                                  @Nullable String currency,
+                                  @NotNull String currency,
                                   @NotNull Set<BlockVector> doors,
-                                  @NotNull Map<BlockVector, Container> containers) {
+                                  @NotNull Map<BlockVector, Container> containers,
+                                  boolean useDefaultLore) {
         this.identifier = identifier;
         this.price = price;
         this.currency = currency;
         this.doors = doors;
         this.containers = containers;
+        this.useDefaultLore = useDefaultLore;
     }
 
     @Override
@@ -40,52 +36,27 @@ public abstract class SimpleInternalProperty
     }
 
     @Override
-    public double price() {
+    public double getPrice() {
         return price;
     }
 
     @Override
-    public @Nullable String currency() {
+    public @NotNull String getCurrency() {
         return currency;
     }
 
     @Override
-    public @NotNull Set<BlockVector> doors() {
+    public @NotNull Set<BlockVector> getDoors() {
         return doors;
     }
 
     @Override
-    public @NotNull Map<BlockVector, Container> containers() {
+    public @NotNull Map<BlockVector, Container> getContainers() {
         return containers;
     }
 
-
-    public static record Info(double price,
-                              @Nullable String currency,
-                              @NotNull List<Point3D> doors,
-                              @NotNull List<Container> containers) implements IdentityGenerator<SimpleInternalProperty> {
-
-        @Override
-        public @NotNull SimpleInternalProperty generate(@NotNull String identifier) {
-            SimpleInternalProperty property;
-
-            Set<BlockVector> doors = new HashSet<>();
-            Map<BlockVector, Container> containers = new HashMap<>();
-            doors().forEach(point3D -> {
-                doors.add(point3D.toBlockVector());
-            });
-            containers().forEach(container -> {
-                containers.put(container.blockVector(), container);
-            });
-
-            return new SimpleInternalProperty(
-                    identifier,
-                    price,
-                    currency,
-                    doors,
-                    containers
-            );
-        }
+    @Override
+    public boolean useDefaultLore() {
+        return useDefaultLore;
     }
-
 }

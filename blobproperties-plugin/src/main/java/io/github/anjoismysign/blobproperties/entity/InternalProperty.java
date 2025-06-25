@@ -1,13 +1,20 @@
-package io.github.anjoismysign.blobproperties.entities;
+package io.github.anjoismysign.blobproperties.entity;
 
+import io.github.anjoismysign.bloblib.BlobLib;
+import io.github.anjoismysign.bloblib.BlobLibAPI;
 import io.github.anjoismysign.bloblib.api.BlobLibSoundAPI;
 import io.github.anjoismysign.bloblib.api.BlobLibTranslatableAPI;
+import io.github.anjoismysign.bloblib.entities.DataAssetType;
+import io.github.anjoismysign.bloblib.entities.positionable.Locatable;
+import io.github.anjoismysign.bloblib.entities.translatable.BlobTranslatableBlock;
+import io.github.anjoismysign.bloblib.entities.translatable.BlobTranslatablePositionable;
 import io.github.anjoismysign.bloblib.entities.translatable.TranslatableBlock;
 import io.github.anjoismysign.bloblib.entities.translatable.TranslatablePositionable;
 import io.github.anjoismysign.bloblib.utilities.TextColor;
-import io.github.anjoismysign.blobproperties.BlobPropertiesInternalAPI;
+import io.github.anjoismysign.blobproperties.BlobProperties;
+import io.github.anjoismysign.blobproperties.api.BlobPropertiesAPI;
 import io.github.anjoismysign.blobproperties.api.Property;
-import io.github.anjoismysign.blobproperties.libs.VectorUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -21,6 +28,7 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -29,41 +37,33 @@ import java.util.Set;
 
 public interface InternalProperty extends Property {
 
-    Set<BlockVector> doors();
+    static final BlobPropertiesAPI API = BlobPropertiesAPI.getInstance();
 
-    Map<BlockVector, Container> containers();
+    Set<BlockVector> getDoors();
 
-    default long totalContainers() {
-        return containers().size();
-    }
-
-    default long totalRows() {
-        return containers().values().stream().mapToLong(Container::rows).sum();
-    }
+    Map<BlockVector, Container> getContainers();
 
     @NotNull
     default String displayName(@Nullable Player player) {
         String locale = player != null ? player.getLocale() : "en_us";
-        return outside(locale).getDisplay();
+        return getOutside(locale).getDisplay();
     }
 
     @Override
     @NotNull
-    default List<String> lore(Player player){
-        TranslatableBlock block = Objects.requireNonNull(
-                BlobLibTranslatableAPI.getInstance().getTranslatableBlock(identifier() + "_lore", player.getLocale()),
-                "No TranslatableBlock under " + getMeta().typeName() + " '" + identifier() + "_lore'");
+    default List<String> lore(Player player) {
+        TranslatableBlock block = getLore(player);
         List<String> lore = new ArrayList<>();
         block.get().forEach(s -> {
             s = s.replace("%price%",
-                            BlobPropertiesInternalAPI.getInstance().format(price()))
-                    .replace("%world%", world().getName())
+                            API == null ? "&4REPORT: NO API" : API.format(getCurrency(), getPrice()))
+                    .replace("%world%", getWorld().getName())
                     .replace("%key%", identifier())
                     .replace("%identifier%", identifier())
                     .replace("%displayName%", displayName(player))
-                    .replace("%containers%", totalContainers() + "")
-                    .replace("%rows%", totalRows() + "")
-                    .replace("%slots%", totalContainers() * 9 + "");
+                    .replace("%containers%", getContainersAmount() + "")
+                    .replace("%rows%", getRowsAmount() + "")
+                    .replace("%slots%", getContainersAmount() * 9 + "");
             s = TextColor.PARSE(s);
             lore.add(s);
         });
@@ -71,28 +71,140 @@ public interface InternalProperty extends Property {
     }
 
     @Override
-    @NotNull default World world() {
+    @NotNull
+    default World getWorld() {
         return Objects.requireNonNull(
-                outside("en_us").get().toLocation().getWorld(),
+                getOutside("en_us").get().toLocation().getWorld(),
                 "No world found for " + getMeta().typeName() + " '" + identifier() + "'");
     }
 
-    @NotNull
-    default TranslatablePositionable inside(@NotNull String locale) {
-        return Objects.requireNonNull(
-                BlobLibTranslatableAPI.getInstance().getTranslatablePositionable(identifier() + "_inside", locale),
-                "No TranslatablePositionable under " + getMeta().typeName() + " '" + identifier() + "_inside'");
+    default long getContainersAmount() {
+        return getContainers().size();
+    }
+
+    default long getRowsAmount() {
+        return getContainers().values().stream().mapToLong(Container::getRows).sum();
     }
 
     @NotNull
-    default TranslatablePositionable outside(@NotNull String locale) {
-        return Objects.requireNonNull(
-                BlobLibTranslatableAPI.getInstance().getTranslatablePositionable(identifier() + "_outside", locale),
-                "No TranslatablePositionable under " + getMeta().typeName() + " '" + identifier() + "_outside'");
+    default TranslatableBlock getLore(@NotNull Player player) {
+        String reference = useDefaultLore() ? "BlobProperties.Property-Lore" :identifier() + "_lore";
+        try {
+            return Objects.requireNonNull(
+                    BlobLibTranslatableAPI.getInstance().getTranslatableBlock(reference, player.getLocale()),
+                    "No TranslatableBlock under " + getMeta().typeName() + " '" + reference + "'");
+        } catch (Throwable throwable) {
+            BlobTranslatableBlock block = BlobTranslatableBlock.of(reference, "en_us", List.of("Write down the lore, this was autogenerated"));
+            File directory = BlobProperties.getInstance().getManagerDirector().getFileManager().getDirectory(DataAssetType.TRANSLATABLE_BLOCK);
+            File file = new File(directory, reference + ".yml");
+            BlobLib.getInstance().getTranslatableManager().saveBlock(file, block);
+            return block;
+        }
     }
 
-    default boolean getOutside(@NotNull Player player) {
-        TranslatablePositionable outside = outside(player.getLocale());
+    @NotNull
+    default TranslatablePositionable getInside(@NotNull String locale) {
+        String reference = identifier() + "_inside";
+        try {
+            return Objects.requireNonNull(BlobLibTranslatableAPI.getInstance().getTranslatablePositionable(reference, locale),
+                    "No TranslatablePositionable under " + getMeta().typeName() + " '" + reference + "'");
+        } catch (Throwable throwable){
+            World world = Bukkit.getWorlds().get(0);
+            BlobTranslatablePositionable positionable = BlobTranslatablePositionable.of(
+                    reference,
+                    "en_us",
+                    "Autogenerated",
+                    new Locatable() {
+                        @Override
+                        public @NotNull World getWorld() {
+                            return world;
+                        }
+
+                        @Override
+                        public float getYaw() {
+                            return 0;
+                        }
+
+                        @Override
+                        public float getPitch() {
+                            return 0;
+                        }
+
+                        @Override
+                        public double getX() {
+                            return 0;
+                        }
+
+                        @Override
+                        public double getY() {
+                            return 0;
+                        }
+
+                        @Override
+                        public double getZ() {
+                            return 0;
+                        }
+                    });
+            File directory = BlobProperties.getInstance().getManagerDirector().getFileManager().getDirectory(DataAssetType.TRANSLATABLE_POSITIONABLE);
+            File file = new File(directory, reference + ".yml");
+            BlobLib.getInstance().getTranslatablePositionableManager().saveAsset(file, positionable);
+            return positionable;
+        }
+    }
+
+    @NotNull
+    default TranslatablePositionable getOutside(@NotNull String locale) {
+        String reference = identifier() + "_outside";
+        try {
+            return Objects.requireNonNull(
+                    BlobLibTranslatableAPI.getInstance().getTranslatablePositionable(reference, locale),
+                    "No TranslatablePositionable under " + getMeta().typeName() + " '" + reference + "'");
+        } catch (Throwable throwable){
+            World world = Bukkit.getWorlds().get(0);
+            BlobTranslatablePositionable positionable = BlobTranslatablePositionable.of(
+                    reference,
+                    "en_us",
+                    "Autogenerated",
+                    new Locatable() {
+                        @Override
+                        public @NotNull World getWorld() {
+                            return world;
+                        }
+
+                        @Override
+                        public float getYaw() {
+                            return 0;
+                        }
+
+                        @Override
+                        public float getPitch() {
+                            return 0;
+                        }
+
+                        @Override
+                        public double getX() {
+                            return 0;
+                        }
+
+                        @Override
+                        public double getY() {
+                            return 0;
+                        }
+
+                        @Override
+                        public double getZ() {
+                            return 0;
+                        }
+                    });
+            File directory = BlobProperties.getInstance().getManagerDirector().getFileManager().getDirectory(DataAssetType.TRANSLATABLE_POSITIONABLE);
+            File file = new File(directory, reference + ".yml");
+            BlobLib.getInstance().getTranslatablePositionableManager().saveAsset(file, positionable);
+            return positionable;
+        }
+    }
+
+    default boolean placeOutside(@NotNull Player player) {
+        TranslatablePositionable outside = getOutside(player.getLocale());
         Location playerLocation = player.getLocation();
         float yaw = playerLocation.getYaw();
         float pitch = playerLocation.getPitch();
@@ -104,8 +216,8 @@ public interface InternalProperty extends Property {
         return true;
     }
 
-    default boolean getInside(@NotNull Player player) {
-        TranslatablePositionable inside = inside(player.getLocale());
+    default boolean placeInside(@NotNull Player player) {
+        TranslatablePositionable inside = getInside(player.getLocale());
         Location playerLocation = player.getLocation();
         float yaw = playerLocation.getYaw();
         float pitch = playerLocation.getPitch();
@@ -119,20 +231,20 @@ public interface InternalProperty extends Property {
 
     default boolean containsDoor(@NotNull Block door) {
         BlockVector vector = door.getLocation().toVector().toBlockVector();
-        return doors().contains(vector);
+        return getDoors().contains(vector);
     }
 
     default String buildKey(@NotNull Vector vector) {
-        return world().getName() + ":" + VectorUtil.vectorToString(vector);
+        return getWorld().getName() + ":" + vector.getBlockX() + " " + vector.getBlockY() + " " + vector.getBlockZ();
     }
 
     @NotNull
     default String getContainer(Block block) {
-        return containers().get(block.getLocation().toVector().toBlockVector()).key();
+        return getContainers().get(block.getLocation().toVector().toBlockVector()).getKey();
     }
 
     default int getContainerRows(Block block) {
-        return containers().get(block.getLocation().toVector().toBlockVector()).rows();
+        return getContainers().get(block.getLocation().toVector().toBlockVector()).getRows();
     }
 
     /**
@@ -146,7 +258,8 @@ public interface InternalProperty extends Property {
         if (containsContainer(block))
             return false;
         Vector vector = block.getLocation().toVector();
-        containers().put(vector.toBlockVector(), Container.of(vector, rows, buildKey(vector)));
+        getContainers().put(vector.toBlockVector(), Container.of(vector, rows, buildKey(vector)));
+        save();
         return true;
     }
 
@@ -160,13 +273,14 @@ public interface InternalProperty extends Property {
         if (!containsContainer(block))
             return false;
         BlockVector vector = block.getLocation().toVector().toBlockVector();
-        containers().remove(vector);
+        getContainers().remove(vector);
+        save();
         return true;
     }
 
     default boolean containsContainer(@NotNull Block block) {
         BlockVector blockVector = block.getLocation().toVector().toBlockVector();
-        return containers().containsKey(blockVector);
+        return getContainers().containsKey(blockVector);
     }
 
     default boolean addDoor(@NotNull Block block) {
@@ -176,11 +290,13 @@ public interface InternalProperty extends Property {
                 Block relative = block.getRelative(BlockFace.DOWN);
                 if (relative.getType() != Material.IRON_DOOR) return false;
             }
-            doors().add(block.getLocation().toVector().toBlockVector());
+            getDoors().add(block.getLocation().toVector().toBlockVector());
+            save();
             return true;
         }
         if (block.getType() == Material.IRON_TRAPDOOR) {
-            doors().add(block.getLocation().toVector().toBlockVector());
+            getDoors().add(block.getLocation().toVector().toBlockVector());
+            save();
             return true;
         }
         return false;
@@ -190,10 +306,13 @@ public interface InternalProperty extends Property {
         BlockVector vector = door.getLocation().toVector().toBlockVector();
         if (!containsDoor(door))
             return false;
-        doors().remove(vector);
+        getDoors().remove(vector);
+        save();
         return true;
     }
 
     void save();
+
+    boolean useDefaultLore();
 
 }

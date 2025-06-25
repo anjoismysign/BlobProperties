@@ -1,15 +1,15 @@
 package io.github.anjoismysign.blobproperties.director;
 
+import io.github.anjoismysign.bloblib.objects.SerializableItem;
+import io.github.anjoismysign.bloblib.utilities.StringUtil;
+import io.github.anjoismysign.blobproperties.entity.InternalProperty;
+import io.github.anjoismysign.blobproperties.entity.PropertiesNamespacedKeys;
+import io.github.anjoismysign.blobproperties.entity.PropertyContainer;
+import io.github.anjoismysign.blobproperties.entity.ItemType;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
-import us.mytheria.bloblib.objects.SerializableItem;
-import us.mytheria.bloblib.utilities.StringUtil;
-import io.github.anjoismysign.blobproperties.entities.PropertiesNamespacedKeys;
-import io.github.anjoismysign.blobproperties.entities.PropertyContainer;
-import io.github.anjoismysign.blobproperties.entities.publicproperty.PublicProperty;
-import io.github.anjoismysign.blobproperties.enums.ItemType;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -27,16 +27,16 @@ public class ItemStackManager extends PropertiesManager {
         YamlConfiguration items = YamlConfiguration.loadConfiguration(getManagerDirector().getLegacyFileManager().getItems());
         setItem(SerializableItem.fromConfigurationSection(items
                         .getConfigurationSection("PublicProperties-DoorManager")),
-                ItemType.PUBLICPROPERTYDOORMANAGER);
+                ItemType.PUBLIC_PROPERTY_DOOR_MANAGER);
         setItem(SerializableItem.fromConfigurationSection(items
                         .getConfigurationSection("PrivateProperties-DoorManager")),
-                ItemType.PRIVATEPROPERTYDOORMANAGER);
+                ItemType.PRIVATE_PROPERTY_DOOR_MANAGER);
         setItem(SerializableItem.fromConfigurationSection(items
                         .getConfigurationSection("PublicProperties-ContainerManager")),
-                ItemType.PUBLICPROPERTYCONTAINERMANAGER);
+                ItemType.PUBLIC_PROPERTY_CONTAINER_MANAGER);
         setItem(SerializableItem.fromConfigurationSection(items
                         .getConfigurationSection("PrivateProperties-ContainerManager")),
-                ItemType.PRIVATEPROPERTYCONTAINERMANAGER);
+                ItemType.PRIVATE_PROPERTY_CONTAINER_MANAGER);
     }
 
     private void setItem(ItemStack itemStack, ItemType itemType) {
@@ -50,27 +50,27 @@ public class ItemStackManager extends PropertiesManager {
         return equipment.get(type).clone();
     }
 
-    public ItemStack getPublicDoorManager(PublicProperty property) {
-        ItemStack itemStack = getItem(ItemType.PUBLICPROPERTYDOORMANAGER);
+    public ItemStack getDoorManager(InternalProperty property) {
+        ItemStack itemStack = getItem(ItemType.PUBLIC_PROPERTY_DOOR_MANAGER);
         ItemMeta itemMeta = itemStack.getItemMeta();
         itemMeta.setLore(StringUtil.replace(itemMeta.getLore(), new HashMap<>() {
             {
-                put("%property%", property.getKey());
+                put("%property%", property.identifier());
             }
         }));
-        itemMeta.getPersistentDataContainer().set(PropertiesNamespacedKeys.OBJECT_META.getKey(), PersistentDataType.STRING, property.getKey());
+        itemMeta.getPersistentDataContainer().set(PropertiesNamespacedKeys.OBJECT_META.getKey(), PersistentDataType.STRING, property.identifier());
         itemStack.setItemMeta(itemMeta);
         return itemStack;
     }
 
-    public ItemStack getPublicContainerManager(PublicProperty property, int rows) {
+    public ItemStack getContainerManager(InternalProperty property, int rows) {
         PropertyContainer vinyl = new PropertyContainer(property, rows);
-        ItemStack itemStack = getItem(ItemType.PUBLICPROPERTYCONTAINERMANAGER);
+        ItemStack itemStack = getItem(ItemType.PUBLIC_PROPERTY_CONTAINER_MANAGER);
         ItemMeta itemMeta = itemStack.getItemMeta();
         itemMeta.setLore(StringUtil.replace(itemMeta.getLore(), new HashMap<>() {
             {
                 put("%rows%", rows + "");
-                put("%property%", property.getKey());
+                put("%property%", property.identifier());
             }
         }));
         vinyl.cd(itemMeta);

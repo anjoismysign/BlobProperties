@@ -1,4 +1,4 @@
-package io.github.anjoismysign.blobproperties.listeners;
+package io.github.anjoismysign.blobproperties.listener;
 
 import io.github.anjoismysign.bloblib.api.BlobLibMessageAPI;
 import io.github.anjoismysign.bloblib.api.BlobLibSoundAPI;
@@ -14,8 +14,8 @@ import io.github.anjoismysign.blobproperties.entity.InternalProperty;
 import io.github.anjoismysign.blobproperties.entity.InternalPropertyType;
 import io.github.anjoismysign.blobproperties.entity.PropertiesNamespacedKeys;
 import io.github.anjoismysign.blobproperties.entity.PropertyContainer;
-import io.github.anjoismysign.blobproperties.enums.ItemType;
-import io.github.anjoismysign.blobproperties.libs.InventoryUtil;
+import io.github.anjoismysign.blobproperties.entity.ItemType;
+import io.github.anjoismysign.blobproperties.library.InventoryUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;

@@ -1,4 +1,4 @@
-package io.github.anjoismysign.blobproperties.libs;
+package io.github.anjoismysign.blobproperties.library;
 
 import org.bukkit.block.Block;
 import org.bukkit.util.BlockVector;

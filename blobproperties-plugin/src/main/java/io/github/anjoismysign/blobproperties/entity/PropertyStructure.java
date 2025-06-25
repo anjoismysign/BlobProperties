@@ -1,7 +1,7 @@
-package io.github.anjoismysign.blobproperties.entities;
+package io.github.anjoismysign.blobproperties.entity;
 
+import io.github.anjoismysign.blobproperties.library.StructureUtil;
 import org.bukkit.structure.Structure;
-import io.github.anjoismysign.blobproperties.libs.StructureUtil;
 
 import javax.sql.rowset.serial.SerialBlob;
 import java.sql.Blob;
@@ -13,8 +13,8 @@ public class PropertyStructure {
     public PropertyStructure(Structure structure) {
         try {
             this.serializedStructure = new SerialBlob(StructureUtil.serialize(structure));
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } catch (SQLException exception) {
+            throw new RuntimeException(exception);
         }
     }
 
@@ -30,8 +30,8 @@ public class PropertyStructure {
     public void setStructure(Structure structure) {
         try {
             this.serializedStructure = new SerialBlob(StructureUtil.serialize(structure));
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException exception) {
+            exception.printStackTrace();
         }
     }
 

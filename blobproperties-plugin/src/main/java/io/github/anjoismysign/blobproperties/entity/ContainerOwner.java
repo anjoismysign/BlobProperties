@@ -1,7 +1,7 @@
-package io.github.anjoismysign.blobproperties.entities;
+package io.github.anjoismysign.blobproperties.entity;
 
-import org.bukkit.inventory.ItemStack;
 import io.github.anjoismysign.bloblib.utilities.ItemStackUtil;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.HashMap;

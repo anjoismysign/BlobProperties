@@ -2,10 +2,10 @@ package io.github.anjoismysign.blobproperties.director.manager;
 
 import io.github.anjoismysign.blobproperties.director.PropertiesManager;
 import io.github.anjoismysign.blobproperties.director.PropertiesManagerDirector;
-import io.github.anjoismysign.blobproperties.listeners.PublicPropertyBuy;
-import io.github.anjoismysign.blobproperties.listeners.PublicPropertyHome;
-import io.github.anjoismysign.blobproperties.listeners.PublicPropertyListener;
-import io.github.anjoismysign.blobproperties.listeners.PublicProprietorListener;
+import io.github.anjoismysign.blobproperties.listener.PublicPropertyBuy;
+import io.github.anjoismysign.blobproperties.listener.PublicPropertyHome;
+import io.github.anjoismysign.blobproperties.listener.PublicPropertyListener;
+import io.github.anjoismysign.blobproperties.listener.PublicProprietorListener;
 
 public class ListenerManager extends PropertiesManager {
     private final PublicPropertyListener publicPropertyListener;

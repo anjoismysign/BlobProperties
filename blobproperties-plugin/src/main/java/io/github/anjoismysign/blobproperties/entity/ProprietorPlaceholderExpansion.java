@@ -1,14 +1,16 @@
-package io.github.anjoismysign.blobproperties.entities;
+package io.github.anjoismysign.blobproperties.entity;
 
-import io.github.anjoismysign.blobproperties.api.InternalProprietor;
-import io.github.anjoismysign.blobproperties.api.Party;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import io.github.anjoismysign.bloblib.api.BlobLibTranslatableAPI;
 import io.github.anjoismysign.bloblib.entities.BlobPHExpansion;
 import io.github.anjoismysign.bloblib.entities.translatable.TranslatableSnippet;
+import io.github.anjoismysign.blobproperties.BlobProperties;
+import io.github.anjoismysign.blobproperties.api.Party;
+import io.github.anjoismysign.blobproperties.api.SerializableProprietor;
 import io.github.anjoismysign.blobproperties.director.PropertiesManagerDirector;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -23,17 +25,17 @@ public class ProprietorPlaceholderExpansion {
 
     public Consumer<BlobPHExpansion> consumer() {
         return expansion -> {
-            expansion.putSimple("isInsidePublicProperty", offlinePlayer -> {
-                InternalProprietor proprietor = getProprietor(offlinePlayer.getUniqueId());
+            expansion.putSimple("isInsideProperty", offlinePlayer -> {
+                SerializableProprietor proprietor = getProprietor(offlinePlayer.getUniqueId());
                 if (proprietor == null)
                     return notOnline().get();
                 Player player = proprietor.getPlayer();
-                return proprietor.isInsideProperty() ? getSnippet("BlobLib.Boolean-True", player)
+                return proprietor.getCurrentlyAt() != null ? getSnippet("BlobLib.Boolean-True", player)
                         .get() : getSnippet("BlobLib.Boolean-False", player)
                         .get();
             });
             expansion.putSimple("isAttendingParty", offlinePlayer -> {
-                InternalProprietor proprietor = getProprietor(offlinePlayer.getUniqueId());
+                SerializableProprietor proprietor = getProprietor(offlinePlayer.getUniqueId());
                 if (proprietor == null)
                     return notOnline().get();
                 Player player = proprietor.getPlayer();
@@ -42,7 +44,7 @@ public class ProprietorPlaceholderExpansion {
                         .get();
             });
             expansion.putSimple("currentlyAt", offlinePlayer -> {
-                InternalProprietor proprietor = getProprietor(offlinePlayer.getUniqueId());
+                SerializableProprietor proprietor = getProprietor(offlinePlayer.getUniqueId());
                 if (proprietor == null)
                     return notOnline().get();
                 Player player = proprietor.getPlayer();
@@ -51,7 +53,7 @@ public class ProprietorPlaceholderExpansion {
                         proprietor.getCurrentlyAt().displayName(player);
             });
             expansion.putSimple("lastKnownAt", offlinePlayer -> {
-                InternalProprietor proprietor = getProprietor(offlinePlayer.getUniqueId());
+                SerializableProprietor proprietor = getProprietor(offlinePlayer.getUniqueId());
                 if (proprietor == null)
                     return notOnline().get();
                 Player player = proprietor.getPlayer();
@@ -60,7 +62,7 @@ public class ProprietorPlaceholderExpansion {
                         proprietor.getLastKnownAt().displayName(player);
             });
             expansion.putSimple("currentlyAttending", offlinePlayer -> {
-                InternalProprietor proprietor = getProprietor(offlinePlayer.getUniqueId());
+                SerializableProprietor proprietor = getProprietor(offlinePlayer.getUniqueId());
                 if (proprietor == null)
                     return notOnline().get();
                 Player player = proprietor.getPlayer();
@@ -104,10 +106,10 @@ public class ProprietorPlaceholderExpansion {
     }
 
     @Nullable
-    private InternalProprietor getProprietor(@NotNull UUID uuid) {
-        Player player = BlobProperties.getInstance().getServer().getPlayer(uuid);
+    private SerializableProprietor getProprietor(@NotNull UUID uuid) {
+        Player player = Bukkit.getPlayer(uuid);
         if (player == null)
             return null;
-        return director.getProprietorManager().getProprietor(player);
+        return (SerializableProprietor) BlobProperties.getInstance().getProprietorManager().getPlayerProprietor(player);
     }
 }

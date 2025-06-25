@@ -1,4 +1,4 @@
-package io.github.anjoismysign.blobproperties.entities;
+package io.github.anjoismysign.blobproperties.entity;
 
 import org.bukkit.NamespacedKey;
 

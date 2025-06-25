@@ -1,7 +1,8 @@
 package io.github.anjoismysign.blobproperties.director;
 
+import io.github.anjoismysign.bloblib.utilities.ResourceUtil;
+import io.github.anjoismysign.blobproperties.BlobProperties;
 import org.bukkit.configuration.file.YamlConfiguration;
-import us.mytheria.bloblib.utilities.ResourceUtil;
 
 import java.io.File;
 
@@ -20,9 +21,9 @@ public class LegacyFileManager {
             if (!path.exists()) path.mkdir();
             ///////////////////////////////////////////
             if (!items.exists()) items.createNewFile();
-            ResourceUtil.updateYml(path, "/tempEquipment.yml", "items.yml", items, director.getPlugin());
-        } catch (Exception e) {
-            e.printStackTrace();
+            ResourceUtil.updateYml(path, "/tempEquipment.yml", "items.yml", items, BlobProperties.getInstance());
+        } catch (Exception exception) {
+            exception.printStackTrace();
         }
     }
 
