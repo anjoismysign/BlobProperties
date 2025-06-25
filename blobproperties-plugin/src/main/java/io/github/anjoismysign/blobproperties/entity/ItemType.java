@@ -1,0 +1,8 @@
+package io.github.anjoismysign.blobproperties.enums;
+
+public enum ItemType {
+    PUBLIC_PROPERTY_DOOR_MANAGER,
+    PRIVATE_PROPERTY_DOOR_MANAGER,
+    PUBLIC_PROPERTY_CONTAINER_MANAGER,
+    PRIVATE_PROPERTY_CONTAINER_MANAGER
+}

@@ -1,0 +1,12 @@
+Locale: es_es
+BlobProperties:
+  My-Party:
+    Snippet: Mi fiesta
+  Other-Party:
+    Snippet: Fiesta de %player%
+  Outside:
+    Snippet: afuera
+  None-Party:
+    Snippet: ninguna
+  Container-Inventory-Title:
+    Snippet: Contenedor

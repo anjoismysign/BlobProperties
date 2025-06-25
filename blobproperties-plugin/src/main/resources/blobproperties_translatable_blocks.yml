@@ -1,0 +1,7 @@
+BlobProperties:
+  Property-Lore:
+    Block:
+      - '&7Containers: &f%containers%'
+      - '&7Slots: &f%slots%'
+      - ' '
+      - '&7Worth: &r%price%'

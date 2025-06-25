@@ -1,0 +1,35 @@
+Locale: es_es
+Title: '&lPROPIEDADES'
+Size: 45
+Buttons:
+  Background:
+    ItemStack:
+      Material: BLACK_STAINED_GLASS_PANE
+      CustomModelData: 0
+      DisplayName: ' '
+      Lore: [ ]
+    Slot: 0-44
+  My-Properties:
+    ItemStack:
+      Material: ENDER_PEARL
+      CustomModelData: 0
+      DisplayName: '&aMis propiedades'
+      Lore:
+        - '&7Click para teletransportarse a una propiedad'
+    Slot: 20
+  Sell-Properties:
+    ItemStack:
+      Material: WRITABLE_BOOK
+      CustomModelData: 0
+      DisplayName: '&cMenú de ventas'
+      Lore:
+        - '&7Click para vender una propiedad'
+    Slot: 24
+  Close:
+    ItemStack:
+      Material: RED_DYE
+      CustomModelData: 0
+      DisplayName: '&6Cerrar'
+      Lore:
+        - '&7Click para cerrar'
+    Slot: 44

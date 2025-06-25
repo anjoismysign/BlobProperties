@@ -1,0 +1,11 @@
+Database:
+  Type: SQLITE
+  IdentifierType: UUID
+  Hostname: localhost
+  Port: 3306
+  Database: database
+  Username: admin
+  Password: password
+Options:
+  numberFormat: VAULT
+  PendingInvitesExpiration: 60

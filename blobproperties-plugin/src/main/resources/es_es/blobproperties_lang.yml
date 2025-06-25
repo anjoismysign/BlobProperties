@@ -1,0 +1,141 @@
+Locale: es_es
+Door:
+  Added:
+    Type: TITLE
+    Title: '&f&lLISTO!'
+    Subtitle: '&7Puerta añadida'
+  Removed:
+    Type: TITLE
+    Title: '&f&lLISTO!'
+    Subtitle: '&7Puerta removida'
+Container:
+  Added:
+    Type: TITLE
+    Title: '&f&lLISTO!'
+    Subtitle: '&7Contenedor añadido'
+  Removed:
+    Type: TITLE
+    Title: '&f&lLISTO!'
+    Subtitle: '&7Contenedor removido'
+Property:
+  Purchased:
+    Type: TITLE
+    Title: '&a&lCOMPRADA!'
+    Subtitle: '&7La propiedad por &r%price%'
+    BlobSound: Property.Purchased
+  Sold:
+    Type: TITLE
+    Title: '&a&lVENDIDA!'
+    Subtitle: '&7La propiedad por &r%price%'
+    BlobSound: Property.Sold
+  Denied:
+    Type: TITLE
+    Title: '&c&lDENEGADO'
+    Subtitle: '&7Le hace falta %left%'
+    BlobSound: Property.Denied
+  Already-Owner:
+    Type: TITLE
+    Title: '&c&lDENEGADO'
+    Subtitle: '&7Ya posee esta propiedad'
+    BlobSound: Property.Already-Owner
+  Not-Owner:
+    Type: TITLE
+    Title: '&c&lDENEGADO'
+    Subtitle: '&7No posee esta propiedad'
+    BlobSound: Property.Not-Owner
+  Not-Enough-Money:
+    Type: TITLE
+    Title: '&c&lOOPS!'
+    Subtitle: '&7No le alcanza!'
+    BlobSound: Property.Not-Enough-Money
+Builder:
+  Price:
+    Type: TITLE
+    Title: '&f&lPRECIO'
+    Subtitle: '&7Puede incluir decimales'
+  Price-Timeout:
+    Type: TITLE
+    Title: '&c&lMUY LENTO'
+    Subtitle: '&7Le tomó mucho escribir Price'
+    BlobSound: Builder.Timeout
+  PropertyDisplayName:
+    Type: TITLE
+    Title: '&f&lDISPLAY-NAME'
+    Subtitle: '&7Se usará en el locale "en_us"'
+  PropertyDisplayName-Timeout:
+    Type: TITLE
+    Title: '&c&lMUY LENTO'
+    Subtitle: '&7Le tomó mucho escribir display name'
+    BlobSound: Builder.Timeout
+BlobProprietor:
+  Not-Inside-Property:
+    Type: CHAT
+    Message: '&c&lERROR: &7No está dentro de una propiedad'
+    BlobSound: System.Alert
+  Not-Inside-Own-Property:
+    Type: CHAT
+    Message: '&c&lERROR: &7No está dentro de su propia propiedad'
+    BlobSound: System.Alert
+  Not-Inside-Cache:
+    Type: CHAT
+    Message: '&c&lERROR: &7No se encuentra en la caché (tal vez aún)'
+    BlobSound: System.Alert
+  Not-Inside-Cache-Others:
+    Type: CHAT
+    Message: '&c&lERROR: &7%player% no se encuentra en la caché (tal vez aún)'
+    BlobSound: System.Alert
+  Invited:
+    Type: CHAT
+    Message: '&a&lINVITADO: &7%player% fue invitado a su propiedad'
+    BlobSound: BlobProprietor.Invited
+  Received-Invite:
+    Type: CHAT
+    Message: '&a&lINVITADO: &7Ha sido invitado a la propiedad de %player%'
+    Hover: '&eClick para aceptar'
+    BlobSound: BlobProprietor.Received-Invite
+  Other-Not-Attending-Party:
+    Type: CHAT
+    Message: '&c&lERROR: &7%player% el jugador no atiende una fiesta'
+    BlobSound: System.Alert
+  Not-Attending-Party:
+    Type: CHAT
+    Message: '&c&lERROR: &7No atiendes una fiesta'
+    BlobSound: System.Alert
+  No-Pending-Invite:
+    Type: CHAT
+    Message: '&c&lERROR: &7Invitación expirada o no encontrada'
+    BlobSound: System.Alert
+  Leaving:
+    Type: CHAT
+    Message: '&c&lSALIÓ: &7Abandonaste la fiesta de %player%'
+  Other-Leaving:
+    Type: CHAT
+    Message: '&c&lSALIÓ: &7%player% abandonó la fiesta'
+  Not-Party-Leader:
+    Type: CHAT
+    Message: '&c&lERROR: &7No eres el líder de la fiesta'
+    BlobSound: System.Alert
+  Party-Leader-Cannot-Leave:
+    Type: CHAT
+    Message: '&c&lERROR: &7El líder no puede abandonar la fiesta'
+    BlobSound: System.Alert
+Party:
+  Disbanded:
+    Type: ACTIONBAR
+    Message: '&7Aguafiestaron la fiesta'
+  Step-In:
+    Type: ACTIONBAR
+    Message: '&7Visitando a %player%'
+    BlobSound: Property.Door-Open
+  Other-Step-In:
+    Type: ACTIONBAR
+    Message: '&7%player% llegó'
+    BlobSound: Property.Door-Inside
+  Step-Out:
+    Type: ACTIONBAR
+    Message: '&7Saliendo de la propiedad de %player%'
+    BlobSound: Property.Door-Outside
+  Other-Step-Out:
+    Type: ACTIONBAR
+    Message: '&7%player% salió'
+    BlobSound: Property.Door-Closed

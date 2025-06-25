@@ -1,0 +1,11 @@
+name: BlobProperties
+main: us.mytheria.blobproperties.BlobProperties
+version: ${project.version}
+authir: [ mcclovin, promorrom ]
+api-version: 1.17
+depend: [ BlobLib ]
+softdepend:
+  - BlobRP
+commands:
+  publicproperty:
+    description: base command

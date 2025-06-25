@@ -1,0 +1,66 @@
+Title: '&lPUBLIC PROPERTY > BUILD'
+Size: 18
+Buttons:
+  Background:
+    ItemStack:
+      Material: BLACK_STAINED_GLASS_PANE
+      CustomModelData: 0
+      DisplayName: " "
+      Lore: [ ]
+    Slot: 0-17
+  White-Background:
+    ItemStack:
+      Material: WHITE_STAINED_GLASS_PANE
+      CustomModelData: 0
+      DisplayName: " "
+      Lore: [ ]
+    Slot: 1-6,10-16
+  World:
+    ItemStack:
+      Material: GRASS_BLOCK
+      CustomModelData: 0
+      DisplayName: "&6World"
+      Lore:
+        - "&7Selected: &f%world%"
+    Slot: 1
+  Key:
+    ItemStack:
+      Material: BOOK
+      CustomModelData: 0
+      DisplayName: "&6Key"
+      Lore:
+        - "&7Selected: &f%key%"
+    Slot: 3
+  Price:
+    ItemStack:
+      Material: EMERALD
+      CustomModelData: 0
+      DisplayName: "&6Price"
+      Lore:
+        - "&7Selected: &f%price%"
+    Slot: 5
+  PropertyDisplayName:
+    ItemStack:
+      Material: BOOK
+      CustomModelData: 0
+      DisplayName: "&6Display-name"
+      Lore:
+        - "&7Selected: &f%propertyDisplayName%"
+    Slot: 7
+  Location:
+    ItemStack:
+      Material: IRON_DOOR
+      CustomModelData: 0
+      DisplayName: "&6Outside (location)"
+      Lore:
+        - "&7Selected: &f%location%"
+    Slot: 10
+  Build:
+    ItemStack:
+      Material: SLIME_BALL
+      CustomModelData: 0
+      DisplayName: "&6Build"
+      Lore:
+        - "&7Click to add public property"
+        - "&7to the files."
+    Slot: 13

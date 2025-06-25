@@ -1,0 +1,34 @@
+Title: '&lPROPERTIES'
+Size: 45
+Buttons:
+  Background:
+    ItemStack:
+      Material: BLACK_STAINED_GLASS_PANE
+      CustomModelData: 0
+      DisplayName: " "
+      Lore: [ ]
+    Slot: 0-44
+  My-Properties:
+    ItemStack:
+      Material: ENDER_PEARL
+      CustomModelData: 0
+      DisplayName: '&aMy Properties'
+      Lore:
+        - '&7Click to teleport to a property'
+    Slot: 20
+  Sell-Properties:
+    ItemStack:
+      Material: WRITABLE_BOOK
+      CustomModelData: 0
+      DisplayName: '&cSales Menu'
+      Lore:
+        - '&7Click to sell a property'
+    Slot: 24
+  Close:
+    ItemStack:
+      Material: RED_DYE
+      CustomModelData: 0
+      DisplayName: "&6Close"
+      Lore:
+        - "&7Click to close"
+    Slot: 44

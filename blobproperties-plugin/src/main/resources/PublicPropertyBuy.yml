@@ -1,0 +1,32 @@
+Title: '&lPROPERTIES'
+Size: 45
+Buttons:
+  Background:
+    ItemStack:
+      Material: BLACK_STAINED_GLASS_PANE
+      CustomModelData: 0
+      DisplayName: " "
+      Lore: [ ]
+    Slot: 0-44
+  Close:
+    ItemStack:
+      Material: RED_DYE
+      CustomModelData: 0
+      DisplayName: "&6Close"
+      Lore:
+        - "&7Click to close"
+    Slot: 20
+  Buy:
+    ItemStack:
+      Material: SLIME_BALL
+      CustomModelData: 0
+      DisplayName: "&6Purchase"
+      Lore:
+        - "&7Price: &r%price%"
+    Slot: 24
+  Info:
+    ItemStack:
+      Material: IRON_DOOR
+      CustomModelData: 0
+      DisplayName: "&6Information"
+    Slot: 22

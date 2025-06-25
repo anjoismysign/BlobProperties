@@ -1,0 +1,8 @@
+Locale: es_es
+BlobProperties:
+  Property-Lore:
+    Block:
+      - '&7Contenedores: &f%containers%'
+      - '&7Ranuras: &f%slots%'
+      - ' '
+      - '&7Valor: &r%price%'

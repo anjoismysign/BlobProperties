@@ -1,0 +1,15 @@
+PublicProperties-DoorManager:
+  Material: IRON_NUGGET
+  CustomModelData: 1
+  DisplayName: "&cDoor Manager"
+  Lore:
+    - "&7Property: &f%property%"
+    - "&c&lPUBLIC PROPERTIES"
+PublicProperties-ContainerManager:
+  Material: STICK
+  CustomModelData: 1
+  DisplayName: "&cContainer Manager"
+  Lore:
+    - "&7Property: &f%property%"
+    - "&7Rows: &f%rows%"
+    - "&c&lPUBLIC PROPERTIES"

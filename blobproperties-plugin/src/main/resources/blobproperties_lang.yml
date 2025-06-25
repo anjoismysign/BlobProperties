@@ -1,0 +1,145 @@
+World:
+  Not-Found:
+    Type: TITLE
+    Title: '&c&lNOT FOUND'
+    Subtitle: '&7World not found'
+Door:
+  Added:
+    Type: TITLE
+    Title: '&f&lDONE!'
+    Subtitle: '&7Door has been added'
+  Removed:
+    Type: TITLE
+    Title: '&f&lDONE!'
+    Subtitle: '&7Door has been removed'
+Container:
+  Added:
+    Type: TITLE
+    Title: '&f&lDONE!'
+    Subtitle: '&7Container has been added'
+  Removed:
+    Type: TITLE
+    Title: '&f&lDONE!'
+    Subtitle: '&7Container has been removed'
+Property:
+  Purchased:
+    Type: TITLE
+    Title: '&a&lBOUGHT!'
+    Subtitle: '&7Property bought for &r%price%'
+    BlobSound: Property.Purchased
+  Sold:
+    Type: TITLE
+    Title: '&a&lSOLD!'
+    Subtitle: '&7Property sold for &r%price%'
+    BlobSound: Property.Sold
+  Denied:
+    Type: TITLE
+    Title: '&c&lDENIED'
+    Subtitle: '&7You need %left% more'
+    BlobSound: Property.Denied
+  Already-Owner:
+    Type: TITLE
+    Title: '&c&lDENIED'
+    Subtitle: '&7You already own this property'
+    BlobSound: Property.Already-Owner
+  Not-Owner:
+    Type: TITLE
+    Title: '&c&lDENIED'
+    Subtitle: '&7You do not own this property'
+    BlobSound: Property.Not-Owner
+  Not-Enough-Money:
+    Type: TITLE
+    Title: '&c&lOOPS!'
+    Subtitle: '&7Not enough money!'
+    BlobSound: Property.Not-Enough-Money
+Builder:
+  Price:
+    Type: TITLE
+    Title: '&f&lTYPE IN PRICE'
+    Subtitle: '&7It can include decimals'
+  Price-Timeout:
+    Type: TITLE
+    Title: '&c&lTIMEOUT'
+    Subtitle: '&7You took too long to type in a price'
+    BlobSound: Builder.Timeout
+  PropertyDisplayName:
+    Type: TITLE
+    Title: '&f&lDISPLAY-NAME'
+    Subtitle: '&7This will be used in "en_us" locale'
+  PropertyDisplayName-Timeout:
+    Type: TITLE
+    Title: '&c&lTIMEOUT'
+    Subtitle: '&7You took too long to type in a display name'
+    BlobSound: Builder.Timeout
+BlobProprietor:
+  Not-Inside-Property:
+    Type: CHAT
+    Message: '&c&lERROR: &7You are not inside a property'
+    BlobSound: System.Alert
+  Not-Inside-Own-Property:
+    Type: CHAT
+    Message: '&c&lERROR: &7You are not inside your own property'
+    BlobSound: System.Alert
+  Not-Inside-Cache:
+    Type: CHAT
+    Message: '&c&lERROR: &7You are not inside the cache (maybe not yet)'
+    BlobSound: System.Alert
+  Not-Inside-Cache-Others:
+    Type: CHAT
+    Message: '&c&lERROR: &7%player% is not inside the cache (maybe not yet)'
+    BlobSound: System.Alert
+  Invited:
+    Type: CHAT
+    Message: '&a&lINVITED: &7%player% has been invited to your property'
+    BlobSound: BlobProprietor.Invited
+  Received-Invite:
+    Type: CHAT
+    Message: '&a&lINVITED: &7You have been invited to %player%''s property'
+    Hover: '&eClick to accept'
+    BlobSound: BlobProprietor.Received-Invite
+  Leaving:
+    Type: CHAT
+    Message: '&c&lLEFT: &7You have left %player%''s party'
+  Other-Leaving:
+    Type: CHAT
+    Message: '&c&lLEFT: &7%player% has left the party'
+  Other-Not-Attending-Party:
+    Type: CHAT
+    Message: '&c&lERROR: &7%player% is no longer attending the party'
+    BlobSound: System.Alert
+  Not-Attending-Party:
+    Type: CHAT
+    Message: '&c&lERROR: &7You are not attending a party'
+    BlobSound: System.Alert
+  Not-Party-Leader:
+    Type: CHAT
+    Message: '&c&lERROR: &7You are not the party leader'
+    BlobSound: System.Alert
+  Party-Leader-Cannot-Leave:
+    Type: CHAT
+    Message: '&c&lERROR: &7Party leader cannot leave the party'
+    BlobSound: System.Alert
+  No-Pending-Invite:
+    Type: CHAT
+    Message: '&c&lERROR: &7Invite expired or not found'
+    BlobSound: System.Alert
+Party:
+  Step-In:
+    Type: ACTIONBAR
+    Message: "&7Visiting %player%'s place"
+    BlobSound: Property.Door-Open
+  Other-Step-In:
+    Type: ACTIONBAR
+    Message: '&7%player% arrived'
+    BlobSound: Property.Door-Inside
+  Step-Out:
+    Type: ACTIONBAR
+    Message: "&7Leaving %player%'s place"
+    BlobSound: Property.Door-Outside
+  Other-Step-Out:
+    Type: ACTIONBAR
+    Message: '&7%player% left'
+    BlobSound: Property.Door-Closed
+  Disbanded:
+    Type: ACTIONBAR
+    Message: '&7Party was disbanded'

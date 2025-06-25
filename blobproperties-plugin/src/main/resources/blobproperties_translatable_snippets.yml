@@ -1,0 +1,11 @@
+BlobProperties:
+  My-Party:
+    Snippet: 'My party'
+  Other-Party:
+    Snippet: '%player%''s party'
+  Outside:
+    Snippet: 'outside'
+  None-Party:
+    Snippet: 'none'
+  Container-Inventory-Title:
+    Snippet: 'Container'
