@@ -1,7 +1,7 @@
 name: BlobProperties
 main: io.github.anjoismysign.blobproperties.BlobProperties
 version: ${project.version}
-authir: [ promorrom ]
+author: promorrom
 api-version: 1.21.4
 depend: [ BlobLib ]
 commands:
