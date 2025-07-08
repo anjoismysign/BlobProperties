@@ -9,6 +9,7 @@ import io.github.anjoismysign.blobproperties.numberformat.Generic;
 import io.github.anjoismysign.blobproperties.numberformat.Integers;
 import io.github.anjoismysign.blobproperties.numberformat.Vault;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
 
 public class ConfigManager extends PropertiesManager {
 
@@ -23,8 +24,9 @@ public class ConfigManager extends PropertiesManager {
         main.saveDefaultConfig();
         main.getConfig().options().copyDefaults(true);
         main.saveConfig();
-        this.pendingInvitesExpiration = main.getConfig().getLong("Options.PendingInvitesExpiration");
-        String format = main.getConfig().getString("Options.numberFormat");
+        FileConfiguration config = main.getConfig();
+        this.pendingInvitesExpiration = config.getLong("Options.PendingInvitesExpiration");
+        String format = config.getString("Options.numberFormat");
         switch (format) {
             case "VAULT":
                 this.formatter = new Vault();
