@@ -56,11 +56,6 @@ public class BlobProperties
     }
 
     @Override
-    public void onDisable() {
-        director.unload();
-    }
-
-    @Override
     public IManagerDirector getManagerDirector() {
         return proxy;
     }

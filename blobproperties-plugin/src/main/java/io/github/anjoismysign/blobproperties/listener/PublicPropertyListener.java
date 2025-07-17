@@ -4,8 +4,10 @@ import io.github.anjoismysign.bloblib.api.BlobLibMessageAPI;
 import io.github.anjoismysign.bloblib.api.BlobLibSoundAPI;
 import io.github.anjoismysign.bloblib.api.BlobLibTranslatableAPI;
 import io.github.anjoismysign.bloblib.entities.message.BlobSound;
+import io.github.anjoismysign.bloblib.entities.translatable.TranslatablePositionable;
 import io.github.anjoismysign.blobproperties.BlobPropertiesInternalAPI;
 import io.github.anjoismysign.blobproperties.api.Party;
+import io.github.anjoismysign.blobproperties.api.Property;
 import io.github.anjoismysign.blobproperties.api.ProprietorContainer;
 import io.github.anjoismysign.blobproperties.api.SerializableProprietor;
 import io.github.anjoismysign.blobproperties.director.PropertiesManagerDirector;
@@ -36,6 +38,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 import java.util.List;
@@ -206,13 +209,17 @@ public class PublicPropertyListener extends ProprietorListener {
                     block = block.getRelative(BlockFace.DOWN);
                 }
                 BlockFace facing = BlobPropertiesInternalAPI.getInstance().doorFacing(player, door);
-                Location location = block.getRelative(facing).getLocation().clone();
+                Location location;
+                Property currentlyAt = proprietor.getCurrentlyAt();
+                TranslatablePositionable positionable = currentlyAt == null ? property.getInside("en_us") : property.getOutside("en_us");
+                if (positionable == null){
+                    location = block.getRelative(facing).getLocation().clone();
+                } else {
+                    location = positionable.get().toLocation();
+                }
                 location.setYaw(yaw);
                 location.setPitch(pitch);
-                location.setX(location.getBlockX() + 0.5);
-                location.setY(location.getBlockY() + 0.02);
-                location.setZ(location.getBlockZ() + 0.5);
-                if (proprietor.getCurrentlyAt() == null)
+                if (currentlyAt == null)
                     proprietor.stepIn(InternalPropertyType.PUBLIC, property.identifier(), location);
                 else
                     proprietor.stepOut(location);

@@ -55,7 +55,7 @@ public class PublicProprietorListener extends ProprietorListener {
     private PublicProprietorListener(PropertiesManagerDirector director) {
         super(director);
         inPublicProperty = new HashSet<>();
-        Bukkit.getPluginManager().registerEvents(this, getPlugin());
+//        Bukkit.getPluginManager().registerEvents(this, getPlugin());
     }
 
     @EventHandler
@@ -85,7 +85,7 @@ public class PublicProprietorListener extends ProprietorListener {
 
     @EventHandler
     public void onChorusFruit(PlayerTeleportEvent event) {
-        if (event.getCause() != PlayerTeleportEvent.TeleportCause.CHORUS_FRUIT)
+        if (event.getCause() != PlayerTeleportEvent.TeleportCause.CONSUMABLE_EFFECT)
             return;
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
