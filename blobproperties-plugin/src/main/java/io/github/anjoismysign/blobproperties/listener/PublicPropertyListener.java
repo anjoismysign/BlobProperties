@@ -213,7 +213,8 @@ public class PublicPropertyListener extends ProprietorListener {
                 Property currentlyAt = proprietor.getCurrentlyAt();
                 TranslatablePositionable positionable = currentlyAt == null ? property.getInside("en_us") : property.getOutside("en_us");
                 if (positionable == null){
-                    location = block.getRelative(facing).getLocation().clone();
+                    location = block.getRelative(facing).getLocation().toCenterLocation().clone();
+                    location.setY(location.getBlockY()+0.1);
                 } else {
                     location = positionable.get().toLocation();
                 }

@@ -33,13 +33,17 @@ import java.util.stream.Collectors;
 public enum BlobPropertiesCommand {
     INSTANCE;
 
-    private static final Command COMMAND = BukkitAdapter.getInstance().ofBukkitCommand("properties");
+    private static final String COMMAND_NAME = "properties";
+    private static final String COMMAND_PERMISSION = "properties.command";
+    private static final String COMMAND_DESCRIPTION = "Base command for BlobProperties plugin";
+
+    private static final Command COMMAND = BukkitAdapter.getInstance().createCommand(COMMAND_NAME, COMMAND_PERMISSION, COMMAND_DESCRIPTION);
 
     private static final BlobLibMessageAPI MESSAGE_API = BlobLibMessageAPI.getInstance();
     private static final BlobPropertiesAPI API = Objects.requireNonNull(BlobPropertiesAPI.getInstance(), "api cannot be null");
 
     public void setup(@NotNull PropertiesManagerDirector director) {
-        Command home = COMMAND.child("home");
+        Command home = COMMAND.child("home"); //home's permission is "properties.command.home"
         home.onExecute((permissionMessenger, strings) -> {
             @Nullable Player player = player(permissionMessenger);
             if (player == null)

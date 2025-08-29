@@ -23,7 +23,7 @@ Buttons:
       CustomModelData: 0
       DisplayName: '&6Comprar'
       Lore:
-        - '&7Precio: &r%price%'
+        - '&7Precio: &f%price%'
     Slot: 24
   Info:
     ItemStack:
