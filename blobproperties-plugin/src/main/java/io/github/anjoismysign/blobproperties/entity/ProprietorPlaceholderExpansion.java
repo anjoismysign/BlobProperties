@@ -70,7 +70,7 @@ public class ProprietorPlaceholderExpansion {
                 if (currentlyAttending == null)
                     return getSnippet("BlobProperties.None-Party", player)
                             .get();
-                boolean isOwner = currentlyAttending.getOwner().getUniqueId().equals(proprietor.getUniqueId());
+                boolean isOwner = currentlyAttending.getOwner().getAddress().equals(proprietor.getAddress());
                 return isOwner ? getSnippet("BlobProperties.My-Party", player)
                         .modder()
                         .replace("%player%", proprietor.getCurrentlyAttending().getOwner().getPlayer().getName())

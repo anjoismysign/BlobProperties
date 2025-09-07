@@ -25,11 +25,17 @@ public interface Proprietor {
     Player getPlayer();
 
     /**
-     * Retrieves the unique identifier of the proprietor.
+     * Retrieves the unique Minecraft UUID of the proprietor.
      *
-     * @return The unique identifier of the proprietor.
+     * @return The Minecraft UUID of the proprietor.
      */
-    UUID getUniqueId();
+    UUID getAddress();
+
+    /**
+     * Gets this Proprietor identifier, used for profiles.
+     * @return the identifier
+     */
+    String getIdentifier();
 
     /**
      * Checks if the player is attending a party.
@@ -50,7 +56,7 @@ public interface Proprietor {
         @Nullable Party party = getCurrentlyAttending();
         if (party == null)
             return false;
-        return party.getOwner().getUniqueId().equals(getUniqueId());
+        return party.getOwner().getAddress().equals(getAddress());
     }
 
     /**
@@ -116,7 +122,7 @@ public interface Proprietor {
         @Nullable Party party = getCurrentlyAttending();
         if (party == null)
             return false;
-        return party.getOwner().getUniqueId().equals(other.getCurrentlyAttending().getOwner().getUniqueId());
+        return party.getOwner().getAddress().equals(other.getCurrentlyAttending().getOwner().getAddress());
     }
 
     /**

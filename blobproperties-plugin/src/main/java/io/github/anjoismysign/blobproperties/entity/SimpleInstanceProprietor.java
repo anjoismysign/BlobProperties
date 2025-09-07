@@ -130,8 +130,13 @@ public class SimpleInstanceProprietor implements BlobSerializable, SerializableP
         return getPlayer() != null && getPlayer().isValid();
     }
 
-    public UUID getUniqueId() {
+    public UUID getAddress() {
         return uuid;
+    }
+
+    @Override
+    public String getIdentifier() {
+        return getAddress().toString();
     }
 
     public boolean isAttendingParty() {
@@ -140,7 +145,7 @@ public class SimpleInstanceProprietor implements BlobSerializable, SerializableP
 
     public boolean isPartyLeader() {
         if (!isAttendingParty()) return false;
-        return getCurrentlyAttending().getOwner().getUniqueId().equals(director.getProprietorManager().getPlayerProprietor(getPlayer()).getUniqueId());
+        return getCurrentlyAttending().getOwner().getAddress().equals(getPlayer().getUniqueId());
     }
 
     @Nullable

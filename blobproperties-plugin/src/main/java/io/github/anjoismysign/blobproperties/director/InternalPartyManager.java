@@ -43,10 +43,10 @@ public class InternalPartyManager
     }
 
     public void addParty(Party party) {
-        parties.put(party.getOwner().getUniqueId(), (InternalParty) party);
+        parties.put(party.getOwner().getAddress(), (InternalParty) party);
     }
 
     public void removeParty(Party party) {
-        parties.remove(party.getOwner().getUniqueId());
+        parties.remove(party.getOwner().getAddress());
     }
 }

@@ -113,7 +113,7 @@ public class PublicPropertyListener extends ProprietorListener {
         if (event.getHand() != EquipmentSlot.HAND)
             return;
         Player player = event.getPlayer();
-        SerializableProprietor proprietor = getProprietorManager().getPlayerProprietor(player);
+        SerializableProprietor proprietor = (SerializableProprietor) BlobPropertiesInternalAPI.getInstance().getProprietor(player);
         Block block = event.getClickedBlock();
         InternalProperty property = shardManager.isContainer(block);
         if (property == null)
@@ -154,7 +154,7 @@ public class PublicPropertyListener extends ProprietorListener {
     @EventHandler
     public void onContainerClose(InventoryCloseEvent event) {
         Player player = (Player) event.getPlayer();
-        SerializableProprietor proprietor = getProprietorManager().getPlayerProprietor(player);
+        SerializableProprietor proprietor = (SerializableProprietor) BlobPropertiesInternalAPI.getInstance().getProprietor(player);
         Inventory inventory = event.getInventory();
         ProprietorContainer vinyl = proprietor.getCurrentContainer();
         if (vinyl == null) return;
@@ -190,7 +190,7 @@ public class PublicPropertyListener extends ProprietorListener {
                 handleDoor(player, block, true);
                 return;
             }
-            SerializableProprietor proprietor = getProprietorManager().getPlayerProprietor(player);
+            SerializableProprietor proprietor = (SerializableProprietor) BlobPropertiesInternalAPI.getInstance().getProprietor(player);
             Party attending = proprietor.getCurrentlyAttending();
             InternalProperty attendingProperty = attending == null ? null : (InternalProperty) attending.getProperty();
             String attendingPropertyKey = attendingProperty == null ? null : attendingProperty.identifier();

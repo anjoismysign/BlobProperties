@@ -2,13 +2,13 @@ package io.github.anjoismysign.blobproperties.entity;
 
 import io.github.anjoismysign.bloblib.api.BlobLibMessageAPI;
 import io.github.anjoismysign.blobproperties.BlobProperties;
+import io.github.anjoismysign.blobproperties.BlobPropertiesInternalAPI;
 import io.github.anjoismysign.blobproperties.api.BlobPropertiesAPI;
 import io.github.anjoismysign.blobproperties.api.Party;
 import io.github.anjoismysign.blobproperties.api.Property;
 import io.github.anjoismysign.blobproperties.api.Proprietor;
 import io.github.anjoismysign.blobproperties.api.SerializableProprietor;
 import io.github.anjoismysign.blobproperties.director.InternalPartyManager;
-import io.github.anjoismysign.blobproperties.director.SimpleInstanceProprietorManager;
 import io.github.anjoismysign.blobproperties.listener.PublicProprietorListener;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -34,10 +34,6 @@ public class InternalParty implements Party {
         return (InternalPartyManager) Objects.requireNonNull(BlobPropertiesAPI.getInstance()).getPartyManager();
     }
 
-    private static SimpleInstanceProprietorManager proprietorManager() {
-        return (SimpleInstanceProprietorManager) Objects.requireNonNull(BlobPropertiesAPI.getInstance()).getProprietorManager();
-    }
-
     /**
      * Creates a new party.
      * Will automatically add the party to the {@link InternalPartyManager}.
@@ -52,7 +48,7 @@ public class InternalParty implements Party {
         this.property = property;
         this.allowed = new HashSet<>();
         this.inside = new HashSet<>();
-        this.inside.add(owner.getUniqueId());
+        this.inside.add(owner.getAddress());
         owner.setCurrentlyAttending(this);
         allow(owner);
         hideOwner();
@@ -105,7 +101,7 @@ public class InternalParty implements Party {
      * @return true if the user is allowed to step into the party, false otherwise
      */
     public boolean isAllowed(SerializableProprietor proprietor) {
-        return proprietor.getUniqueId().equals(owner.getUniqueId()) || allowed.contains(proprietor.getUniqueId());
+        return proprietor.getAddress().equals(owner.getAddress()) || allowed.contains(proprietor.getAddress());
     }
 
     /**
@@ -170,7 +166,7 @@ public class InternalParty implements Party {
         Player newParticipantPlayer = newParticipant.getPlayer();
         if (newParticipantPlayer == null || !newParticipantPlayer.isOnline())
             return;
-        inside.add(newParticipant.getUniqueId());
+        inside.add(newParticipant.getAddress());
         Bukkit.getOnlinePlayers().forEach(online -> online.hidePlayer(BlobProperties.getInstance(), newParticipantPlayer));
         forEachInside(currentParticipant -> {
             if (currentParticipant.getName().equals(newParticipantPlayer.getName()))
@@ -192,7 +188,7 @@ public class InternalParty implements Party {
      * @param member the member
      */
     public void allow(SerializableProprietor member) {
-        allowed.add(member.getUniqueId());
+        allowed.add(member.getAddress());
     }
 
     /**
@@ -201,7 +197,7 @@ public class InternalParty implements Party {
      * @param member the member
      */
     public void unallow(SerializableProprietor member) {
-        allowed.remove(member.getUniqueId());
+        allowed.remove(member.getAddress());
     }
 
     @Override
@@ -241,7 +237,7 @@ public class InternalParty implements Party {
 
     public void forEachAllowedProprietor(Consumer<SerializableProprietor> consumer) {
         allowed.forEach(uuid -> {
-            SerializableProprietor proprietor = proprietorManager().getUUIDProprietor(uuid);
+            SerializableProprietor proprietor = (SerializableProprietor) BlobPropertiesInternalAPI.getInstance().getProprietor(uuid);
             if (proprietor == null)
                 return;
             consumer.accept(proprietor);
@@ -256,7 +252,7 @@ public class InternalParty implements Party {
      */
     public void forEachAllowed(Consumer<Player> consumer) {
         allowed.forEach(uuid -> {
-            SerializableProprietor proprietor = proprietorManager().getUUIDProprietor(uuid);
+            SerializableProprietor proprietor = (SerializableProprietor) BlobPropertiesInternalAPI.getInstance().getProprietor(uuid);
             if (proprietor == null)
                 return;
             Player player = proprietor.getPlayer();
