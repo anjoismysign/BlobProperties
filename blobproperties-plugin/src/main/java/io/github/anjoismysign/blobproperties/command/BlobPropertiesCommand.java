@@ -126,7 +126,7 @@ public enum BlobPropertiesCommand {
                     .handle(player);
             MESSAGE_API.getMessage("BlobProprietor.Received-Invite", target)
                     .modify(s -> s.replace("%player%", player.getName()))
-                    .onClick(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/publicproperty party visit " + player.getName()))
+                    .onClick(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/properties party visit " + player.getName()))
                     .handle(target);
             guest.addPendingInvite(host, party);
         }));

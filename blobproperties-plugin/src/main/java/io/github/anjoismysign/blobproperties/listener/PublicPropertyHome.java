@@ -8,7 +8,7 @@ import io.github.anjoismysign.bloblib.entities.inventory.BlobInventory;
 import io.github.anjoismysign.bloblib.entities.inventory.BlobInventoryTracker;
 import io.github.anjoismysign.bloblib.entities.inventory.InventoryDataRegistry;
 import io.github.anjoismysign.bloblib.entities.message.BlobSound;
-import io.github.anjoismysign.bloblib.itemstack.ItemStackModder;
+import io.github.anjoismysign.bloblib.middleman.itemstack.ItemStackModder;
 import io.github.anjoismysign.blobproperties.api.SerializableProprietor;
 import io.github.anjoismysign.blobproperties.director.PropertiesManagerDirector;
 import io.github.anjoismysign.blobproperties.entity.InternalProperty;
