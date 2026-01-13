@@ -9,8 +9,8 @@
     <version>1.0.3</version>
     <packaging>pom</packaging>
     <modules>
-        <module>blobproperties-plugin</module>
         <module>blobproperties-api</module>
+        <module>blobproperties-plugin</module>
     </modules>
 
     <properties>
