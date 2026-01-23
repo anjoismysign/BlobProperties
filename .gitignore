@@ -36,3 +36,6 @@ build/
 
 ### Mac OS ###
 .DS_Store
+/.idea/AICommit.xml
+/blobproperties-plugin/dependency-reduced-pom.xml
+/.idea/inspectionProfiles/Project_Default.xml
