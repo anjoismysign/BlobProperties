@@ -1,20 +1,16 @@
 package io.github.anjoismysign.blobproperties.entity;
 
 import io.github.anjoismysign.bloblib.BlobLib;
-import io.github.anjoismysign.bloblib.BlobLibAPI;
 import io.github.anjoismysign.bloblib.api.BlobLibSoundAPI;
 import io.github.anjoismysign.bloblib.api.BlobLibTranslatableAPI;
 import io.github.anjoismysign.bloblib.entities.DataAssetType;
-import io.github.anjoismysign.bloblib.entities.positionable.Locatable;
 import io.github.anjoismysign.bloblib.entities.translatable.BlobTranslatableBlock;
-import io.github.anjoismysign.bloblib.entities.translatable.BlobTranslatablePositionable;
 import io.github.anjoismysign.bloblib.entities.translatable.TranslatableBlock;
 import io.github.anjoismysign.bloblib.entities.translatable.TranslatablePositionable;
 import io.github.anjoismysign.bloblib.utilities.TextColor;
 import io.github.anjoismysign.blobproperties.BlobProperties;
 import io.github.anjoismysign.blobproperties.api.BlobPropertiesAPI;
 import io.github.anjoismysign.blobproperties.api.Property;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;

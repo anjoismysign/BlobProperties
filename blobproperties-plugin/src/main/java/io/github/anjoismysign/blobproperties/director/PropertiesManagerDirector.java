@@ -1,9 +1,7 @@
 package io.github.anjoismysign.blobproperties.director;
 
-import io.github.anjoismysign.bloblib.api.BlobLibProfileAPI;
 import io.github.anjoismysign.bloblib.entities.BlobPHExpansion;
 import io.github.anjoismysign.bloblib.entities.GenericManagerDirector;
-import io.github.anjoismysign.bloblib.middleman.profile.ProfileProvider;
 import io.github.anjoismysign.blobproperties.BlobProperties;
 import io.github.anjoismysign.blobproperties.api.ProprietorManager;
 import io.github.anjoismysign.blobproperties.director.manager.ConfigManager;

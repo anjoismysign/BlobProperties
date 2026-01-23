@@ -2,7 +2,6 @@ package io.github.anjoismysign.blobproperties.event;
 
 import io.github.anjoismysign.blobproperties.api.Proprietor;
 import org.bukkit.event.Event;
-import org.bukkit.event.HandlerList;
 
 public abstract class ProprietorEvent extends Event {
     private final Proprietor proprietor;

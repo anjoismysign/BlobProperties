@@ -4,8 +4,6 @@ import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
-
 /**
  * A Java record representing a 3D point or vector with integer coordinates.
  */

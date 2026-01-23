@@ -1,7 +1,6 @@
 package io.github.anjoismysign.blobproperties;
 
 import io.github.anjoismysign.bloblib.managers.BlobPlugin;
-import io.github.anjoismysign.bloblib.managers.IManagerDirector;
 import io.github.anjoismysign.bloblib.managers.PluginManager;
 import io.github.anjoismysign.bloblib.managers.asset.BukkitIdentityManager;
 import io.github.anjoismysign.blobproperties.api.BlobPropertiesAPI;
@@ -13,16 +12,11 @@ import io.github.anjoismysign.blobproperties.command.BlobPropertiesCommand;
 import io.github.anjoismysign.blobproperties.director.PropertiesManagerDirector;
 import io.github.anjoismysign.blobproperties.entity.InternalProperty;
 import io.github.anjoismysign.blobproperties.entity.InternalPropertyType;
-import io.github.anjoismysign.blobproperties.entity.PublicProperty;
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 public class BlobProperties

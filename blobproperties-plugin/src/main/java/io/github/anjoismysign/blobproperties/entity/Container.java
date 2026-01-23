@@ -4,8 +4,6 @@ import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
-
 public final class Container {
     private Point3D block;
     private int rows;
