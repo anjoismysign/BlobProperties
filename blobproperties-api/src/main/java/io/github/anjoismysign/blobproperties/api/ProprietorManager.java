@@ -27,4 +27,6 @@ public interface ProprietorManager {
     @NotNull
     Proprietor getPlayerProprietor(@NotNull Player player);
 
+    void unload();
+
 }

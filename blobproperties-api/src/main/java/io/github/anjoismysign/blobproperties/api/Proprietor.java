@@ -9,19 +9,13 @@ import java.util.Set;
 import java.util.UUID;
 
 public interface Proprietor {
-    /**
-     * Checks if this object is still valid.
-     * If not valid, the object should be deleted.
-     *
-     * @return True if the object is valid. False otherwise.
-     */
-    boolean isValid();
 
     /**
      * Retrieves the player.
      *
      * @return The player.
      */
+    @Nullable
     Player getPlayer();
 
     /**
@@ -30,12 +24,6 @@ public interface Proprietor {
      * @return The Minecraft UUID of the proprietor.
      */
     UUID getAddress();
-
-    /**
-     * Gets this Proprietor identifier, used for profiles.
-     * @return the identifier
-     */
-    String getIdentifier();
 
     /**
      * Checks if the player is attending a party.

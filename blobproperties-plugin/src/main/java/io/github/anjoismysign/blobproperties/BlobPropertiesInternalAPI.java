@@ -39,8 +39,7 @@ public class BlobPropertiesInternalAPI {
 
     @Nullable
     public Proprietor getProprietor(UUID uuid) {
-        return director
-                .getProprietorManager().getUUIDProprietor(uuid);
+        return director.getProprietorManager().getUUIDProprietor(uuid);
     }
 
     @Nullable

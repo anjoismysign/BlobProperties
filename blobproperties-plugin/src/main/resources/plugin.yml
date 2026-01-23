@@ -4,6 +4,7 @@ version: ${project.version}
 author: promorrom
 api-version: 1.21.4
 depend: [ BlobLib ]
+softdepend: [AlternativeSaving, BlobTycoon]
 commands:
   properties:
     description: base command

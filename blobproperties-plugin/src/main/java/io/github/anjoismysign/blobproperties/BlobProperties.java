@@ -31,7 +31,6 @@ public class BlobProperties
 
     private final Map<PropertyMetaType, BukkitIdentityManager<InternalProperty>> propertyIdentityManagers = new HashMap<>();
     private PropertiesManagerDirector director;
-    private IManagerDirector proxy;
     private BlobPropertiesInternalAPI api;
 
     public static BlobProperties getInstance() {
@@ -52,12 +51,11 @@ public class BlobProperties
                             true));
         }
         this.api = BlobPropertiesInternalAPI.getInstance(director);
-        this.proxy = director.proxy();
     }
 
     @Override
-    public IManagerDirector getManagerDirector() {
-        return proxy;
+    public PropertiesManagerDirector getManagerDirector() {
+        return director;
     }
 
     public BlobPropertiesInternalAPI getApi() {

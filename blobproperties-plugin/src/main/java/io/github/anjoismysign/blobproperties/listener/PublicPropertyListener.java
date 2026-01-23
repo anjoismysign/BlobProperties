@@ -8,6 +8,7 @@ import io.github.anjoismysign.bloblib.entities.translatable.TranslatablePosition
 import io.github.anjoismysign.blobproperties.BlobPropertiesInternalAPI;
 import io.github.anjoismysign.blobproperties.api.Party;
 import io.github.anjoismysign.blobproperties.api.Property;
+import io.github.anjoismysign.blobproperties.api.Proprietor;
 import io.github.anjoismysign.blobproperties.api.ProprietorContainer;
 import io.github.anjoismysign.blobproperties.api.SerializableProprietor;
 import io.github.anjoismysign.blobproperties.director.PropertiesManagerDirector;
@@ -154,18 +155,22 @@ public class PublicPropertyListener extends ProprietorListener {
     @EventHandler
     public void onContainerClose(InventoryCloseEvent event) {
         Player player = (Player) event.getPlayer();
-        SerializableProprietor proprietor = (SerializableProprietor) BlobPropertiesInternalAPI.getInstance().getProprietor(player);
+        @Nullable Proprietor proprietor = BlobPropertiesInternalAPI.getInstance().getProprietor(player);
+        if (proprietor == null){
+            return;
+        }
+        SerializableProprietor serializableProprietor = (SerializableProprietor) proprietor;
         Inventory inventory = event.getInventory();
-        ProprietorContainer vinyl = proprietor.getCurrentContainer();
+        ProprietorContainer vinyl = serializableProprietor.getCurrentContainer();
         if (vinyl == null) return;
         if (inventory.equals(vinyl.inventory())) {
             BlobPropertiesInternalAPI.getInstance().sendOpenableChange(player,
                     vinyl.location().getBlock(), false);
             BlobLibSoundAPI.getInstance().getSound("Property.Container-Close")
                     .handle(player, vinyl.location());
-            proprietor.setCurrentContainer(null);
+            serializableProprietor.setCurrentContainer(null);
             ItemStack[] itemStacks = inventory.getContents();
-            proprietor.saveContainerContent(vinyl.key(), itemStacks);
+            serializableProprietor.saveContainerContent(vinyl.key(), itemStacks);
         }
     }
 

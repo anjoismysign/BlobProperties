@@ -3,6 +3,7 @@ package io.github.anjoismysign.blobproperties.entity;
 import io.github.anjoismysign.blobproperties.api.BlobPropertiesAPI;
 import io.github.anjoismysign.blobproperties.api.Property;
 import io.github.anjoismysign.blobproperties.api.PropertyMetaType;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -10,12 +11,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class PropertyOwner {
-
-    private final Map<PropertyMetaType, Set<String>> properties = new HashMap<>();
+public record PropertyOwner(@NotNull Map<PropertyMetaType, Set<String>> properties) {
 
     public static PropertyOwner of(Map<String, Set<String>> serialized) {
-        PropertyOwner owner = new PropertyOwner();
+        PropertyOwner owner = new PropertyOwner(new HashMap<>());
         serialized.forEach((typeName, names) -> {
             @Nullable PropertyMetaType propertyMetaType = PropertyMetaType.matchPropertyType(typeName);
             if (propertyMetaType == null)

@@ -6,9 +6,10 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ContainerOwner {
-    private HashMap<String, ItemStack[]> containers;
+    private Map<String, ItemStack[]> containers;
 
     public static ContainerOwner fromSerialized(List<String> serialized) {
         ContainerOwner owner = new ContainerOwner();
@@ -28,7 +29,7 @@ public class ContainerOwner {
         this.containers = new HashMap<>();
     }
 
-    public HashMap<String, ItemStack[]> getContainers() {
+    public Map<String, ItemStack[]> getContainers() {
         return containers;
     }
 
