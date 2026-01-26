@@ -227,7 +227,9 @@ public class ProprietorAccount implements Crudable, SerializableProprietor, Post
         PublicProprietorListener.addToPublicTracking(player);
         setCurrentlyAt(property);
         setVanished(true);
-        if (location == null) property.placeInside(player);
+        if (location == null) {
+            property.placeInside(player);
+        }
         else player.teleport(location);
         Party party = getCurrentlyAttending();
         if (party instanceof InternalParty internalParty) internalParty.stepIn(this);

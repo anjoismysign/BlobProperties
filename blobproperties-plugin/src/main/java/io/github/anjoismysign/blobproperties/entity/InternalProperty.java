@@ -124,7 +124,12 @@ public interface InternalProperty extends Property {
     }
 
     default boolean placeInside(@NotNull Player player) {
-        TranslatablePositionable inside = getInside(player.getLocale());
+        @Nullable TranslatablePositionable inside = getInside(player.getLocale());
+        if (inside == null){
+            String reference = identifier() + "_inside";
+            BlobProperties.getInstance().getLogger().info("'"+reference+"' TranslatablePositionable doesn't exist");
+            return false;
+        }
         Location playerLocation = player.getLocation();
         float yaw = playerLocation.getYaw();
         float pitch = playerLocation.getPitch();

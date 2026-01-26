@@ -5,6 +5,7 @@ import io.github.anjoismysign.bloblib.api.BlobLibSoundAPI;
 import io.github.anjoismysign.bloblib.api.BlobLibTranslatableAPI;
 import io.github.anjoismysign.bloblib.entities.message.BlobSound;
 import io.github.anjoismysign.bloblib.entities.translatable.TranslatablePositionable;
+import io.github.anjoismysign.blobproperties.BlobProperties;
 import io.github.anjoismysign.blobproperties.BlobPropertiesInternalAPI;
 import io.github.anjoismysign.blobproperties.api.Party;
 import io.github.anjoismysign.blobproperties.api.Property;
@@ -216,15 +217,33 @@ public class PublicPropertyListener extends ProprietorListener {
                 BlockFace facing = BlobPropertiesInternalAPI.getInstance().doorFacing(player, door);
                 Location location;
                 Property currentlyAt = proprietor.getCurrentlyAt();
-                TranslatablePositionable positionable = currentlyAt == null ? property.getInside("en_us") : property.getOutside("en_us");
-                if (positionable == null){
-                    location = block.getRelative(facing).getLocation().toCenterLocation().clone();
-                    location.setY(location.getBlockY()+0.1);
+                boolean persistYawAndPitch = false;
+                TranslatablePositionable headingTo;
+                if (currentlyAt == null){
+                    headingTo = property.getInside("en_us");
+                    if (headingTo == null){
+                        persistYawAndPitch = true;
+                        location = block.getRelative(facing).getLocation().toCenterLocation().clone();
+                        location.setY(location.getBlockY()+0.1);
+                    } else {
+                        location = headingTo.get().toLocation();
+                    }
                 } else {
-                    location = positionable.get().toLocation();
+                    headingTo = property.getOutside("en_us");
+                    if (headingTo == null){
+                        String identifier = property.identifier();
+                        String translatableIdentifier = identifier+"_outside";
+                        BlobProperties.getInstance().getLogger().severe("'"+identifier+"' public_property is invalid since '"+translatableIdentifier+"' TranslatablePositionable is not loaded");
+                        return;
+                    } else {
+                        location = headingTo.get().toLocation();
+                        persistYawAndPitch = property.getInside("en_us") == null;
+                    }
                 }
-                location.setYaw(yaw);
-                location.setPitch(pitch);
+                if (persistYawAndPitch) {
+                    location.setYaw(yaw);
+                    location.setPitch(pitch);
+                }
                 if (currentlyAt == null)
                     proprietor.stepIn(InternalPropertyType.PUBLIC, property.identifier(), location);
                 else

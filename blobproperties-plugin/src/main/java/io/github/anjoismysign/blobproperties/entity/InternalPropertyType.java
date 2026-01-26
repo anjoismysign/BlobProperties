@@ -28,11 +28,7 @@ public enum InternalPropertyType implements PropertyMeta {
                     new HashSet<>(),
                     new HashMap<>(),
                     true)
-    ),
-//    PRIVATE(
-//            PrivateProperty.class,
-//            PropertyMetaType.PRIVATE
-//    )
+    )
     ;
 
     private static final Map<String, InternalPropertyType> BY_TYPE_NAME = Stream.of(values())
