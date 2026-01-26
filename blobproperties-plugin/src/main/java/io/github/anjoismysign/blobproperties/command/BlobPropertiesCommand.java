@@ -1,6 +1,8 @@
 package io.github.anjoismysign.blobproperties.command;
 
 import io.github.anjoismysign.bloblib.api.BlobLibMessageAPI;
+import io.github.anjoismysign.bloblib.api.BlobLibTranslatableAPI;
+import io.github.anjoismysign.bloblib.entities.translatable.TranslatablePositionable;
 import io.github.anjoismysign.blobproperties.BlobPropertiesInternalAPI;
 import io.github.anjoismysign.blobproperties.api.BlobPropertiesAPI;
 import io.github.anjoismysign.blobproperties.api.Party;
@@ -27,6 +29,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -266,7 +269,18 @@ public enum BlobPropertiesCommand {
                         Map.Entry::getKey,
                         Map.Entry::getValue
                 )));
-        generate.setParameters(typeTarget);
+        CommandTarget<String> nameTarget = new CommandTarget<String>() {
+            @Override
+            public List<String> get() {
+                return List.of("Type the new propery name");
+            }
+
+            @Override
+            public @Nullable String parse(String s) {
+                return s;
+            }
+        };
+        generate.setParameters(typeTarget, nameTarget);
         generate.onExecute(((permissionMessenger, args) -> {
             if (args.length < 2){
                 return;
@@ -279,6 +293,13 @@ public enum BlobPropertiesCommand {
             InternalPropertyType type = typeTarget.parse(typeKey);
             if (type == null){
                 player.sendMessage("Invalid InternalPropertyType: "+typeKey);
+                return;
+            }
+            String positionableIdentifier = identifier+"_outside";
+            BlobLibTranslatableAPI translatableAPI = BlobLibTranslatableAPI.getInstance();
+            @Nullable TranslatablePositionable translatablePositionable = translatableAPI.getTranslatablePositionable(positionableIdentifier);
+            if (translatablePositionable == null){
+                player.sendMessage("You first need to create a TranslatablePositionable by key '"+positionableIdentifier+"'");
                 return;
             }
             InternalProperty internalProperty = type.getCreateFunction().apply(identifier);
