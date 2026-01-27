@@ -2,7 +2,7 @@ name: BlobProperties
 main: io.github.anjoismysign.blobproperties.BlobProperties
 version: ${project.version}
 author: anjoismysign
-api-version: 1.21.4
+api-version: 1.21.11
 depend: [ BlobLib ]
 softdepend: [AlternativeSaving, BlobTycoon]
 commands:
