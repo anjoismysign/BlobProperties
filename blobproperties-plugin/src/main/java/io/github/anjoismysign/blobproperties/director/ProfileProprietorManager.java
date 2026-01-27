@@ -1,5 +1,6 @@
 package io.github.anjoismysign.blobproperties.director;
 
+import com.google.common.collect.Maps;
 import io.github.anjoismysign.bloblib.api.BlobLibProfileAPI;
 import io.github.anjoismysign.bloblib.events.ProfileLoadEvent;
 import io.github.anjoismysign.bloblib.events.ProfileManagementQuitEvent;
@@ -18,7 +19,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -28,7 +28,7 @@ public final class ProfileProprietorManager extends PropertiesManager implements
     private final @NotNull Cruder<ProprietorAccount> accountCruder;
     private final @NotNull Cruder<ProprietorProfile> profileCruder;
 
-    private final @NotNull Map<UUID, ProprietorAccount> accounts = new HashMap<>();
+    private final @NotNull Map<UUID, ProprietorAccount> accounts = Maps.newConcurrentMap();
 
     public ProfileProprietorManager(@NotNull PropertiesManagerDirector director) {
         super(director);
@@ -52,7 +52,7 @@ public final class ProfileProprietorManager extends PropertiesManager implements
     public void onLoad(ProfileLoadEvent event){
         Profile profile = event.getProfile();
         Player player = event.getPlayer();
-        Runnable runnable = () -> {
+        Runnable asyncRunnable = () -> {
             if (!player.isConnected()){
                 return;
             }
@@ -81,9 +81,9 @@ public final class ProfileProprietorManager extends PropertiesManager implements
             }
         };
         if (Bukkit.isPrimaryThread()){
-            Bukkit.getScheduler().runTask(getPlugin(), runnable);
+            Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), asyncRunnable);
         } else {
-            runnable.run();
+            asyncRunnable.run();
         }
     }
 
