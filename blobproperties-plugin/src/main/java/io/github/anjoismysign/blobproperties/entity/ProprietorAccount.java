@@ -35,7 +35,7 @@ public class ProprietorAccount implements Crudable, SerializableProprietor, Post
     private final @NotNull List<ProfileView> profiles;
     private int currentProfileIndex;
     @SuppressWarnings("NotNullFieldNotInitialized")
-    private transient @NotNull ProprietorProfile currentProprietorProfile;
+    private transient @NotNull ProprietorProfile currentProfile;
 
     public ProprietorAccount(@NotNull String identification){
         this.identification = identification;
@@ -52,7 +52,7 @@ public class ProprietorAccount implements Crudable, SerializableProprietor, Post
                 currentProfileIndex = 0;
             }
             ProfileView view = profiles.get(currentProfileIndex);
-            this.currentProprietorProfile = manager.getProfileCruder().readOrGenerate(view.identification());
+            this.currentProfile = manager.getProfileCruder().readOrGenerate(view.identification());
         } else {
             var profileAPI = BlobLibProfileAPI.getInstance();
             var provider = profileAPI.getProvider();
@@ -72,13 +72,13 @@ public class ProprietorAccount implements Crudable, SerializableProprietor, Post
     }
 
     private void save(){
-        manager.getProfileCruder().update(currentProprietorProfile);
+        manager.getProfileCruder().update(currentProfile);
     }
 
     public void createProfile(@NotNull ProfileView profileView,
                               boolean switchTo){
         //noinspection ConstantValue
-        if (switchTo && currentProprietorProfile != null){
+        if (switchTo && currentProfile != null){
             save();
         }
         Cruder<ProprietorProfile> profileCruder = manager.getProfileCruder();
@@ -88,7 +88,7 @@ public class ProprietorAccount implements Crudable, SerializableProprietor, Post
             return;
         }
         int index = profiles.indexOf(profileView);
-        currentProprietorProfile = profile;
+        currentProfile = profile;
         currentProfileIndex = index;
     }
 
@@ -96,7 +96,7 @@ public class ProprietorAccount implements Crudable, SerializableProprietor, Post
         ProfileView target = profiles.get(index);
         Runnable runnable = () -> {
             save();
-            currentProprietorProfile = manager.getProfileCruder().readOrGenerate(target.identification());
+            currentProfile = manager.getProfileCruder().readOrGenerate(target.identification());
             this.currentProfileIndex = index;
         };
         if (Bukkit.isPrimaryThread()){
@@ -121,22 +121,22 @@ public class ProprietorAccount implements Crudable, SerializableProprietor, Post
 
     @Override
     public void saveContainerContent(@NotNull String id, @Nullable ItemStack[] content) {
-        currentProprietorProfile.saveContainerContent(id, content);
+        currentProfile.saveContainerContent(id, content);
     }
 
     @Override
     public @Nullable ItemStack[] getContainerContent(@NotNull String id) {
-        return currentProprietorProfile.getContainerContent(id);
+        return currentProfile.getContainerContent(id);
     }
 
     @Override
     public @Nullable ProprietorContainer getCurrentContainer() {
-        return currentProprietorProfile.getCurrentContainer();
+        return currentProfile.getCurrentContainer();
     }
 
     @Override
     public void setCurrentContainer(@Nullable ProprietorContainer currentContainer) {
-        currentProprietorProfile.setCurrentContainer(currentContainer);
+        currentProfile.setCurrentContainer(currentContainer);
     }
 
     @Override
@@ -152,21 +152,21 @@ public class ProprietorAccount implements Crudable, SerializableProprietor, Post
 
     @Override
     public void setCurrentlyAt(@Nullable Property currentlyAt) {
-        currentProprietorProfile.setCurrentlyAt(currentlyAt);
+        currentProfile.setCurrentlyAt(currentlyAt);
     }
 
     public void setCurrentlyAttending(@Nullable Party currentlyAttending) {
-        if (currentlyAttending != null && currentProprietorProfile.getCurrentlyAttending() != null) {
-            InternalParty previous = (InternalParty) currentProprietorProfile.getCurrentlyAttending();
+        if (currentlyAttending != null && currentProfile.getCurrentlyAttending() != null) {
+            InternalParty previous = (InternalParty) currentProfile.getCurrentlyAttending();
             previous.unallow(this);
             previous.stepOut(this, false);
         }
-        currentProprietorProfile.setCurrentlyAttending(currentlyAttending);
+        currentProfile.setCurrentlyAttending(currentlyAttending);
     }
 
     @Override
     public void removePendingInvite(@NotNull Proprietor host) {
-        currentProprietorProfile.removePendingInvite(host);
+        currentProfile.removePendingInvite(host);
     }
 
     @Override
@@ -174,7 +174,7 @@ public class ProprietorAccount implements Crudable, SerializableProprietor, Post
         Player player = host.getPlayer();
         if (player == null || !player.isOnline()) return;
         ((InternalParty) party).allow(this);
-        var pendingInvites = currentProprietorProfile.getPendingInvites();
+        var pendingInvites = currentProfile.getPendingInvites();
         pendingInvites.add(player.getName());
         Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> pendingInvites.remove(player.getName()), 20 * plugin.getManagerDirector().getConfigManager().getPendingInvitesExpiration());
     }
@@ -192,32 +192,32 @@ public class ProprietorAccount implements Crudable, SerializableProprietor, Post
 
     @Override
     public boolean isAttendingParty() {
-        return currentProprietorProfile.isAttendingParty();
+        return currentProfile.isAttendingParty();
     }
 
     @Override
     public @Nullable InternalProperty getCurrentlyAt() {
-        return currentProprietorProfile.getCurrentlyAt();
+        return currentProfile.getCurrentlyAt();
     }
 
     @Override
     public @Nullable Property getLastKnownAt() {
-        return currentProprietorProfile.getLastKnownAt();
+        return currentProfile.getLastKnownAt();
     }
 
     @Override
     public @Nullable Party getCurrentlyAttending() {
-        return currentProprietorProfile.getCurrentlyAttending();
+        return currentProfile.getCurrentlyAttending();
     }
 
     @Override
     public @NotNull Set<String> getPendingInvites() {
-        return currentProprietorProfile.getPendingInvites();
+        return currentProfile.getPendingInvites();
     }
 
     @Override
     public boolean ownsProperty(@NotNull Property property) {
-        return currentProprietorProfile.ownsProperty(property);
+        return currentProfile.ownsProperty(property);
     }
 
     public void stepIn(@NotNull PropertyMeta type, @NotNull String id, @Nullable Location location) {
@@ -260,16 +260,16 @@ public class ProprietorAccount implements Crudable, SerializableProprietor, Post
 
     @Override
     public void addProperty(@NotNull Property property) {
-        currentProprietorProfile.addProperty(property);
+        currentProfile.addProperty(property);
     }
 
     @Override
     public void removeProperty(@NotNull Property property) {
-        currentProprietorProfile.removeProperty(property);
+        currentProfile.removeProperty(property);
     }
 
     @Override
     public Set<Property> getProperties() {
-        return currentProprietorProfile.getProperties();
+        return currentProfile.getProperties();
     }
 }
