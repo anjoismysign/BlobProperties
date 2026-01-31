@@ -43,7 +43,6 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class PublicPropertyListener extends ProprietorListener {
@@ -115,7 +114,10 @@ public class PublicPropertyListener extends ProprietorListener {
         if (event.getHand() != EquipmentSlot.HAND)
             return;
         Player player = event.getPlayer();
-        SerializableProprietor proprietor = (SerializableProprietor) BlobPropertiesInternalAPI.getInstance().getProprietor(player);
+        SerializableProprietor proprietor = BlobProperties.getInstance().getProprietor(player);
+        if (proprietor == null){
+            return;
+        }
         Block block = event.getClickedBlock();
         InternalProperty property = shardManager.isContainer(block);
         if (property == null)
@@ -126,8 +128,6 @@ public class PublicPropertyListener extends ProprietorListener {
             return;
         event.setCancelled(true);
         String containerKey = property.getContainer(block);
-        if (containerKey == null)
-            return;
         Location location = block.getLocation();
         ItemStack[] items = proprietor.getContainerContent(containerKey);
         String title = BlobLibTranslatableAPI.getInstance()
@@ -156,7 +156,7 @@ public class PublicPropertyListener extends ProprietorListener {
     @EventHandler
     public void onContainerClose(InventoryCloseEvent event) {
         Player player = (Player) event.getPlayer();
-        @Nullable Proprietor proprietor = BlobPropertiesInternalAPI.getInstance().getProprietor(player);
+        @Nullable Proprietor proprietor = BlobProperties.getInstance().getProprietor(player);
         if (proprietor == null){
             return;
         }
@@ -196,7 +196,10 @@ public class PublicPropertyListener extends ProprietorListener {
                 handleDoor(player, block, true);
                 return;
             }
-            SerializableProprietor proprietor = (SerializableProprietor) BlobPropertiesInternalAPI.getInstance().getProprietor(player);
+            SerializableProprietor proprietor = BlobProperties.getInstance().getProprietor(player);
+            if (proprietor == null){
+                return;
+            }
             Party attending = proprietor.getCurrentlyAttending();
             InternalProperty attendingProperty = attending == null ? null : (InternalProperty) attending.getProperty();
             String attendingPropertyKey = attendingProperty == null ? null : attendingProperty.identifier();
@@ -244,30 +247,18 @@ public class PublicPropertyListener extends ProprietorListener {
                     location.setYaw(yaw);
                     location.setPitch(pitch);
                 }
-                if (currentlyAt == null)
+                if (currentlyAt == null) {
                     proprietor.stepIn(InternalPropertyType.PUBLIC, property.identifier(), location);
-                else
+                } else {
                     proprietor.stepOut(location);
+                }
                 player.setVelocity(velocity);
             }
         }
     }
 
-    private BlockFace getBlockFace(Player player, InternalProperty property) {
-        List<Block> lastTwoTargetBlocks = player.getLastTwoTargetBlocks(transparent, 100);
-        if (lastTwoTargetBlocks.size() != 2) {
-            Bukkit.getLogger().info("(onOpen/getBlockFace) There's an issue with property '" + property.identifier() + "'! " +
-                    "Please contact BlobProperties developer with information of how to reproduce the issue!");
-            return null;
-        }
-        Block targetBlock = lastTwoTargetBlocks.get(1);
-        Block adjacentBlock = lastTwoTargetBlocks.get(0);
-        return targetBlock.getFace(adjacentBlock);
-    }
-
     private PropertyContainer holdsContainerManager(Player player) {
         ItemStack item = player.getInventory().getItemInMainHand();
-        if (item == null) return null;
         ItemMeta meta = item.getItemMeta();
         if (meta == null) return null;
         PersistentDataContainer data = meta.getPersistentDataContainer();
@@ -297,8 +288,6 @@ public class PublicPropertyListener extends ProprietorListener {
             }
         }
         ItemStack hand = player.getInventory().getItemInMainHand();
-        if (hand == null)
-            return false;
         ItemMeta itemMeta = hand.getItemMeta();
         if (itemMeta == null)
             return false;
@@ -311,7 +300,13 @@ public class PublicPropertyListener extends ProprietorListener {
         if (itemType != ItemType.PUBLIC_PROPERTY_DOOR_MANAGER)
             return false;
         String region = dataContainer.get(PropertiesNamespacedKeys.OBJECT_META.getKey(), PersistentDataType.STRING);
+        if (region == null){
+            return false;
+        }
         InternalProperty property = (InternalProperty) shardManager.getPropertyByMeta(InternalPropertyType.PUBLIC,region);
+        if (property == null){
+            return false;
+        }
         if (add) {
             if (property.addDoor(block)) {
                 BlobLibMessageAPI.getInstance().getMessage("Door.Added", player).handle(player);

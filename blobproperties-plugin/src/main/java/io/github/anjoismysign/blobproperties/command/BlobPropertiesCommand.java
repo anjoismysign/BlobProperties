@@ -3,7 +3,7 @@ package io.github.anjoismysign.blobproperties.command;
 import io.github.anjoismysign.bloblib.api.BlobLibMessageAPI;
 import io.github.anjoismysign.bloblib.api.BlobLibTranslatableAPI;
 import io.github.anjoismysign.bloblib.entities.translatable.TranslatablePositionable;
-import io.github.anjoismysign.blobproperties.BlobPropertiesInternalAPI;
+import io.github.anjoismysign.blobproperties.BlobProperties;
 import io.github.anjoismysign.blobproperties.api.BlobPropertiesAPI;
 import io.github.anjoismysign.blobproperties.api.Party;
 import io.github.anjoismysign.blobproperties.api.Property;
@@ -31,7 +31,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 public enum BlobPropertiesCommand {
@@ -44,7 +43,6 @@ public enum BlobPropertiesCommand {
     private static final Command COMMAND = BukkitAdapter.getInstance().createCommand(COMMAND_NAME, COMMAND_PERMISSION, COMMAND_DESCRIPTION);
 
     private static final BlobLibMessageAPI MESSAGE_API = BlobLibMessageAPI.getInstance();
-    private static final BlobPropertiesAPI API = Objects.requireNonNull(BlobPropertiesAPI.getInstance(), "api cannot be null");
 
     public void setup(@NotNull PropertiesManagerDirector director) {
         Command home = COMMAND.child("home"); //home's permission is "properties.command.home"
@@ -65,15 +63,19 @@ public enum BlobPropertiesCommand {
 
         partyLeave.onExecute(((permissionMessenger, args) -> {
             @Nullable Player player = player(permissionMessenger);
-            if (player == null)
+            if (player == null) {
                 return;
-            SerializableProprietor senderProprietor = (SerializableProprietor) BlobPropertiesInternalAPI.getInstance().getProprietor(player);
+            }
+            SerializableProprietor senderProprietor = BlobProperties.getInstance().getProprietor(player);
+            if (senderProprietor == null){
+                return;
+            }
             InternalParty party = (InternalParty) senderProprietor.getCurrentlyAttending();
             if (party == null) {
                 MESSAGE_API.getMessage("BlobProprietor.Not-Attending-Party", player).handle(player);
                 return;
             }
-            if (party.getOwner().getAddress().equals(API.getProprietorManager().getPlayerProprietor(player))) {
+            if (party.getOwner().getAddress().equals(senderProprietor.getAddress())) {
                 MESSAGE_API.getMessage("BlobProprietor.Party-Leader-Cannot-Leave", player).handle(player);
                 return;
             }
@@ -84,7 +86,10 @@ public enum BlobPropertiesCommand {
             @Nullable Player player = player(permissionMessenger);
             if (player == null)
                 return;
-            SerializableProprietor host = (SerializableProprietor) BlobPropertiesInternalAPI.getInstance().getProprietor(player);
+            SerializableProprietor host = BlobProperties.getInstance().getProprietor(player);
+            if (host == null){
+                return;
+            }
             InternalParty party = (InternalParty) host.getCurrentlyAttending();
             if (party == null) {
                 MESSAGE_API.getMessage("BlobProprietor.Not-Attending-Party", player).handle(player);
@@ -110,8 +115,14 @@ public enum BlobPropertiesCommand {
                 MESSAGE_API.getMessage("Player.Not-Found", player).handle(player);
                 return;
             }
-            SerializableProprietor host = (SerializableProprietor) BlobPropertiesInternalAPI.getInstance().getProprietor(player);
-            SerializableProprietor guest = (SerializableProprietor) BlobPropertiesInternalAPI.getInstance().getProprietor(target);
+            SerializableProprietor host = BlobProperties.getInstance().getProprietor(player);
+            if (host == null){
+                return;
+            }
+            SerializableProprietor guest = BlobProperties.getInstance().getProprietor(target);
+            if (guest == null){
+                return;
+            }
             InternalParty party = (InternalParty) host.getCurrentlyAttending();
             Property currentlyAt = host.getCurrentlyAt();
             if (currentlyAt == null) {
@@ -147,12 +158,18 @@ public enum BlobPropertiesCommand {
                 MESSAGE_API.getMessage("Player.Not-Found", player).handle(player);
                 return;
             }
-            SerializableProprietor guest = (SerializableProprietor) BlobPropertiesInternalAPI.getInstance().getProprietor(player);
+            SerializableProprietor guest = BlobProperties.getInstance().getProprietor(player);
+            if (guest == null){
+                return;
+            }
             if (!guest.hasPendingInvite(target)) {
                 MESSAGE_API.getMessage("BlobProprietor.No-Pending-Invite", player).handle(player);
                 return;
             }
-            SerializableProprietor host = (SerializableProprietor) BlobPropertiesInternalAPI.getInstance().getProprietor(target);
+            SerializableProprietor host = BlobProperties.getInstance().getProprietor(target);
+            if (host == null){
+                return;
+            }
             InternalParty party = (InternalParty) host.getCurrentlyAttending();
             if (party == null) {
                 MESSAGE_API.getMessage("BlobProprietor.Other-Not-Attending-Party", player)
@@ -184,8 +201,14 @@ public enum BlobPropertiesCommand {
                 MESSAGE_API.getMessage("Player.Not-Found", player).handle(player);
                 return;
             }
-            SerializableProprietor host = (SerializableProprietor) BlobPropertiesInternalAPI.getInstance().getProprietor(player);
-            SerializableProprietor guest = (SerializableProprietor) BlobPropertiesInternalAPI.getInstance().getProprietor(target);
+            SerializableProprietor host = BlobProperties.getInstance().getProprietor(player);
+            if (host == null){
+                return;
+            }
+            SerializableProprietor guest = BlobProperties.getInstance().getProprietor(target);
+            if (guest == null){
+                return;
+            }
             InternalParty party = (InternalParty) host.getCurrentlyAttending();
             if (party == null) {
                 MESSAGE_API.getMessage("BlobProprietor.Not-Attending-Party", player).handle(player);
@@ -269,7 +292,7 @@ public enum BlobPropertiesCommand {
                         Map.Entry::getKey,
                         Map.Entry::getValue
                 )));
-        CommandTarget<String> nameTarget = new CommandTarget<String>() {
+        CommandTarget<String> nameTarget = new CommandTarget<>() {
             @Override
             public List<String> get() {
                 return List.of("Type the new propery name");

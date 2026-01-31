@@ -1,6 +1,6 @@
 package io.github.anjoismysign.blobproperties.listener;
 
-import io.github.anjoismysign.blobproperties.BlobPropertiesInternalAPI;
+import io.github.anjoismysign.blobproperties.BlobProperties;
 import io.github.anjoismysign.blobproperties.api.Proprietor;
 import io.github.anjoismysign.blobproperties.director.PropertiesManagerDirector;
 import io.github.anjoismysign.blobproperties.event.ProprietorJoinSessionEvent;
@@ -18,11 +18,12 @@ import org.bukkit.event.player.PlayerPickupArrowEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 public class PublicProprietorListener extends ProprietorListener {
     private static PublicProprietorListener instance;
-    private final HashSet<UUID> inPublicProperty;
+    private final Set<UUID> inPublicProperty;
 
     public static PublicProprietorListener getInstance(PropertiesManagerDirector director) {
         if (instance == null) {
@@ -33,22 +34,18 @@ public class PublicProprietorListener extends ProprietorListener {
         return instance;
     }
 
-    public static PublicProprietorListener getInstance() {
-        return getInstance(null);
-    }
-
     public static void addToPublicTracking(Player player) {
-        instance.getManagerDirector().getListenerManager().getPublicIndependentListener()
+        instance.getManagerDirector().getListenerManager().getPublicProprietorListener()
                 .inPublicProperty.add(player.getUniqueId());
     }
 
     public static void removeFromPublicTracking(Player player) {
-        instance.getManagerDirector().getListenerManager().getPublicIndependentListener()
+        instance.getManagerDirector().getListenerManager().getPublicProprietorListener()
                 .inPublicProperty.remove(player.getUniqueId());
     }
 
     public static boolean isInPublicProperty(Player player) {
-        return instance.getManagerDirector().getListenerManager().getPublicIndependentListener()
+        return instance.getManagerDirector().getListenerManager().getPublicProprietorListener()
                 .inPublicProperty.contains(player.getUniqueId());
     }
 
@@ -70,16 +67,22 @@ public class PublicProprietorListener extends ProprietorListener {
     @EventHandler
     public void onSessionJoin(ProprietorJoinSessionEvent event) {
         Proprietor proprietor = event.getProprietor();
-        if (proprietor.getCurrentlyAt() != null)
-            addToPublicTracking(proprietor.getPlayer());
-        Player joined = proprietor.getPlayer();
-        Bukkit.getOnlinePlayers().forEach(online -> {
-            Proprietor onlineProprietor = BlobPropertiesInternalAPI.getInstance().getProprietor(online);
-            if (onlineProprietor == null)
+        var player = proprietor.getPlayer();
+        if (player == null){
+            return;
+        }
+        if (proprietor.getCurrentlyAt() != null) {
+            addToPublicTracking(player);
+        }
+        Bukkit.getOnlinePlayers().forEach(onlinePlayer -> {
+            Proprietor onlineProprietor = BlobProperties.getInstance().getProprietor(onlinePlayer);
+            if (onlineProprietor == null) {
                 return;
-            if (onlineProprietor.getCurrentlyAt() != null)
+            }
+            if (onlineProprietor.getCurrentlyAt() != null) {
                 return;
-            joined.showPlayer(getPlugin(), online);
+            }
+            player.showPlayer(getPlugin(), onlinePlayer);
         });
     }
 

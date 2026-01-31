@@ -1,6 +1,5 @@
 package io.github.anjoismysign.blobproperties;
 
-import io.github.anjoismysign.blobproperties.api.Proprietor;
 import io.github.anjoismysign.blobproperties.director.PropertiesManagerDirector;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -8,9 +7,6 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Openable;
 import org.bukkit.block.data.type.Door;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.UUID;
 
 public class BlobPropertiesInternalAPI {
     private static BlobPropertiesInternalAPI instance;
@@ -35,16 +31,6 @@ public class BlobPropertiesInternalAPI {
 
     public String format(double amount) {
         return director.getConfigManager().format(amount);
-    }
-
-    @Nullable
-    public Proprietor getProprietor(UUID uuid) {
-        return director.getProprietorManager().getUUIDProprietor(uuid);
-    }
-
-    @Nullable
-    public Proprietor getProprietor(Player player) {
-        return getProprietor(player.getUniqueId());
     }
 
     public BlockFace doorFacing(Player player, Door door) {

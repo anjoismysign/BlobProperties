@@ -9,14 +9,14 @@ import io.github.anjoismysign.blobproperties.listener.PublicProprietorListener;
 
 public class ListenerManager extends PropertiesManager {
     private final PublicPropertyListener publicPropertyListener;
-    private final PublicProprietorListener publicIndependentListener;
+    private final PublicProprietorListener publicProprietorListener;
     private final PublicPropertyBuy publicPropertyBuy;
     private final PublicPropertyHome publicPropertyHome;
 
     public ListenerManager(PropertiesManagerDirector director) {
         super(director);
         publicPropertyListener = new PublicPropertyListener(director);
-        publicIndependentListener = PublicProprietorListener.getInstance(director);
+        publicProprietorListener = PublicProprietorListener.getInstance(director);
         publicPropertyBuy = new PublicPropertyBuy(director);
         publicPropertyHome = new PublicPropertyHome(director);
     }
@@ -31,8 +31,8 @@ public class ListenerManager extends PropertiesManager {
         return publicPropertyListener;
     }
 
-    public PublicProprietorListener getPublicIndependentListener() {
-        return publicIndependentListener;
+    public PublicProprietorListener getPublicProprietorListener() {
+        return publicProprietorListener;
     }
 
     public PublicPropertyBuy getPublicPropertyBuy() {

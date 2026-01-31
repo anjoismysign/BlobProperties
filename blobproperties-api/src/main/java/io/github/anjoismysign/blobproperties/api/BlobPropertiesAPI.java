@@ -1,6 +1,7 @@
 package io.github.anjoismysign.blobproperties.api;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,13 +17,13 @@ public interface BlobPropertiesAPI {
     }
 
     @NotNull
-    ProprietorManager getProprietorManager();
-
-    @NotNull
     PartyManager getPartyManager();
 
     @NotNull
     PropertyManager getPropertyManager();
+
+    @Nullable
+    Proprietor getProprietor(@NotNull Player player);
 
     @NotNull
     String format(@Nullable String currency,

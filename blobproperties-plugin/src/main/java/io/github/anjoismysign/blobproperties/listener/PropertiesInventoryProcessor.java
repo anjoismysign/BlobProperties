@@ -1,7 +1,7 @@
 package io.github.anjoismysign.blobproperties.listener;
 
 
-import io.github.anjoismysign.blobproperties.api.BlobPropertiesAPI;
+import io.github.anjoismysign.blobproperties.BlobProperties;
 import io.github.anjoismysign.blobproperties.api.SerializableProprietor;
 import io.github.anjoismysign.blobproperties.director.PropertiesManagerDirector;
 import org.bukkit.entity.Player;
@@ -40,7 +40,7 @@ public class PropertiesInventoryProcessor {
      */
     @Nullable
     public SerializableProprietor toProprietor(Player player) {
-        return (SerializableProprietor) BlobPropertiesAPI.getInstance().getProprietorManager().getPlayerProprietor(player);
+        return BlobProperties.getInstance().getProprietor(player);
     }
 
     /**

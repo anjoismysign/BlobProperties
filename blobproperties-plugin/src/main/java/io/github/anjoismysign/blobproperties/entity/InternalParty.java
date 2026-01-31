@@ -2,7 +2,6 @@ package io.github.anjoismysign.blobproperties.entity;
 
 import io.github.anjoismysign.bloblib.api.BlobLibMessageAPI;
 import io.github.anjoismysign.blobproperties.BlobProperties;
-import io.github.anjoismysign.blobproperties.BlobPropertiesInternalAPI;
 import io.github.anjoismysign.blobproperties.api.BlobPropertiesAPI;
 import io.github.anjoismysign.blobproperties.api.Party;
 import io.github.anjoismysign.blobproperties.api.Property;
@@ -44,7 +43,7 @@ public class InternalParty implements Party {
     public InternalParty(@NotNull SerializableProprietor owner,
                          @NotNull Property property) {
         this.owner = owner;
-        this.ownerName = owner.getPlayer().getName();
+        this.ownerName = Objects.requireNonNull(owner.getPlayer()).getName();
         this.property = property;
         this.allowed = new HashSet<>();
         this.inside = new HashSet<>();
@@ -68,7 +67,7 @@ public class InternalParty implements Party {
     public void disband(boolean kickInside) {
         if (kickInside)
             forEachInsideProprietor(proprietor -> {
-                ((InternalProperty) getProperty()).placeOutside(proprietor.getPlayer());
+                ((InternalProperty) getProperty()).placeOutside(Objects.requireNonNull(proprietor.getPlayer()));
                 stepOut(proprietor, true);
                 proprietor.setCurrentlyAt(null);
             });
@@ -228,18 +227,28 @@ public class InternalParty implements Party {
     private void forEachInsideProprietor(Consumer<SerializableProprietor> consumer) {
         Set<UUID> clone = new HashSet<>(inside);
         clone.forEach(uuid -> {
-            SerializableProprietor proprietor = (SerializableProprietor) BlobProperties.getInstance().getProprietorManager().getUUIDProprietor(uuid);
-            if (proprietor == null)
+            var player = Bukkit.getPlayer(uuid);
+            if (player == null){
                 return;
+            }
+            SerializableProprietor proprietor = BlobProperties.getInstance().getProprietor(player);
+            if (proprietor == null) {
+                return;
+            }
             consumer.accept(proprietor);
         });
     }
 
     public void forEachAllowedProprietor(Consumer<SerializableProprietor> consumer) {
         allowed.forEach(uuid -> {
-            SerializableProprietor proprietor = (SerializableProprietor) BlobPropertiesInternalAPI.getInstance().getProprietor(uuid);
-            if (proprietor == null)
+            var player = Bukkit.getPlayer(uuid);
+            if (player == null){
                 return;
+            }
+            SerializableProprietor proprietor = BlobProperties.getInstance().getProprietor(player);
+            if (proprietor == null) {
+                return;
+            }
             consumer.accept(proprietor);
         });
     }
@@ -252,12 +261,14 @@ public class InternalParty implements Party {
      */
     public void forEachAllowed(Consumer<Player> consumer) {
         allowed.forEach(uuid -> {
-            SerializableProprietor proprietor = (SerializableProprietor) BlobPropertiesInternalAPI.getInstance().getProprietor(uuid);
-            if (proprietor == null)
+            var player = Bukkit.getPlayer(uuid);
+            if (player == null){
                 return;
-            Player player = proprietor.getPlayer();
-            if (player == null || !player.isOnline())
+            }
+            SerializableProprietor proprietor = BlobProperties.getInstance().getProprietor(player);
+            if (proprietor == null) {
                 return;
+            }
             consumer.accept(player);
         });
     }
@@ -271,12 +282,14 @@ public class InternalParty implements Party {
     public boolean lodge(@NotNull SerializableProprietor guest) {
         Objects.requireNonNull(guest);
         Player guestPlayer = guest.getPlayer();
-        if (guestPlayer == null || !guestPlayer.isOnline())
+        if (guestPlayer == null || !guestPlayer.isOnline()) {
             return false;
+        }
         SerializableProprietor owner = (SerializableProprietor) getOwner();
         Player ownerPlayer = owner.getPlayer();
-        if (ownerPlayer == null || !ownerPlayer.isOnline())
+        if (ownerPlayer == null) {
             return false;
+        }
         boolean vanish = (owner.getCurrentlyAt() == null &&
                 !owner.getCurrentlyAt().identifier().equals(getProperty().identifier()));
         guest.setCurrentlyAttending(this);
@@ -325,14 +338,12 @@ public class InternalParty implements Party {
                 .replace("%player%", getOwnerName())
                 .get()
                 .handle(guestPlayer);
-        forEachAllowed(allowed -> {
-            messageAPI
-                    .getMessage("BlobProprietor.Other-Leaving", allowed)
-                    .modder()
-                    .replace("%player%", guestPlayer.getName())
-                    .get()
-                    .handle(allowed);
-        });
+        forEachAllowed(allowed -> messageAPI
+                .getMessage("BlobProprietor.Other-Leaving", allowed)
+                .modder()
+                .replace("%player%", guestPlayer.getName())
+                .get()
+                .handle(allowed));
         if (allowed.size() <= 1)
             disband(kickInside);
         return true;

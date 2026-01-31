@@ -3,7 +3,6 @@ package io.github.anjoismysign.blobproperties.director;
 import io.github.anjoismysign.bloblib.entities.BlobPHExpansion;
 import io.github.anjoismysign.bloblib.entities.GenericManagerDirector;
 import io.github.anjoismysign.blobproperties.BlobProperties;
-import io.github.anjoismysign.blobproperties.api.ProprietorManager;
 import io.github.anjoismysign.blobproperties.director.manager.ConfigManager;
 import io.github.anjoismysign.blobproperties.director.manager.ListenerManager;
 import io.github.anjoismysign.blobproperties.entity.ProprietorPlaceholderExpansion;
@@ -23,7 +22,6 @@ public class PropertiesManagerDirector extends GenericManagerDirector<BlobProper
         addManager("ItemStackManager", new ItemStackManager(this));
         addManager("ConfigManager", new ConfigManager(this));
         addManager("PartyManager", InternalPartyManager.getInstance(this));
-        addManager("ProprietorManager", new ProfileProprietorManager(this));
         addManager("ListenerManager", new ListenerManager(this));
         instantiateProprietorExpansion();
     }
@@ -34,17 +32,8 @@ public class PropertiesManagerDirector extends GenericManagerDirector<BlobProper
         PropertyShardManager.getInstance().reload();
     }
 
-    @Override
-    public void unload() {
-        getProprietorManager().unload();
-    }
-
     public final InternalPartyManager getPublicPartyManager() {
         return getManager("PartyManager", InternalPartyManager.class);
-    }
-
-    public final ProprietorManager getProprietorManager() {
-        return (ProprietorManager) getManager("ProprietorManager");
     }
 
     public final ConfigManager getConfigManager() {

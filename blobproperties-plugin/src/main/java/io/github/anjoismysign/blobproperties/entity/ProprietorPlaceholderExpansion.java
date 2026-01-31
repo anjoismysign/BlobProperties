@@ -27,45 +27,65 @@ public class ProprietorPlaceholderExpansion {
         return expansion -> {
             expansion.putSimple("isInsideProperty", offlinePlayer -> {
                 SerializableProprietor proprietor = getProprietor(offlinePlayer.getUniqueId());
-                if (proprietor == null)
+                if (proprietor == null) {
                     return notOnline().get();
+                }
                 Player player = proprietor.getPlayer();
+                if (player == null){
+                    return notOnline().get();
+                }
                 return proprietor.getCurrentlyAt() != null ? getSnippet("BlobLib.Boolean-True", player)
                         .get() : getSnippet("BlobLib.Boolean-False", player)
                         .get();
             });
             expansion.putSimple("isAttendingParty", offlinePlayer -> {
                 SerializableProprietor proprietor = getProprietor(offlinePlayer.getUniqueId());
-                if (proprietor == null)
+                if (proprietor == null) {
                     return notOnline().get();
+                }
                 Player player = proprietor.getPlayer();
+                if (player == null){
+                    return notOnline().get();
+                }
                 return proprietor.isAttendingParty() ? getSnippet("BlobLib.Boolean-True", player)
                         .get() : getSnippet("BlobLib.Boolean-False", player)
                         .get();
             });
             expansion.putSimple("currentlyAt", offlinePlayer -> {
                 SerializableProprietor proprietor = getProprietor(offlinePlayer.getUniqueId());
-                if (proprietor == null)
+                if (proprietor == null) {
                     return notOnline().get();
+                }
                 Player player = proprietor.getPlayer();
+                if (player == null){
+                    return notOnline().get();
+                }
                 return proprietor.getCurrentlyAt() == null ? getSnippet("BlobProperties.Outside", player)
                         .get() :
                         proprietor.getCurrentlyAt().displayName(player);
             });
             expansion.putSimple("lastKnownAt", offlinePlayer -> {
                 SerializableProprietor proprietor = getProprietor(offlinePlayer.getUniqueId());
-                if (proprietor == null)
+                if (proprietor == null) {
                     return notOnline().get();
+                }
                 Player player = proprietor.getPlayer();
+                if (player == null){
+                    return notOnline().get();
+                }
                 return proprietor.getLastKnownAt() == null ? getSnippet("BlobProperties.Outside", player)
                         .get() :
                         proprietor.getLastKnownAt().displayName(player);
             });
             expansion.putSimple("currentlyAttending", offlinePlayer -> {
                 SerializableProprietor proprietor = getProprietor(offlinePlayer.getUniqueId());
-                if (proprietor == null)
+                if (proprietor == null) {
                     return notOnline().get();
+                }
                 Player player = proprietor.getPlayer();
+                if (player == null){
+                    return notOnline().get();
+                }
                 Party currentlyAttending = proprietor.getCurrentlyAttending();
                 if (currentlyAttending == null)
                     return getSnippet("BlobProperties.None-Party", player)
@@ -110,6 +130,6 @@ public class ProprietorPlaceholderExpansion {
         Player player = Bukkit.getPlayer(uuid);
         if (player == null)
             return null;
-        return (SerializableProprietor) BlobProperties.getInstance().getProprietorManager().getPlayerProprietor(player);
+        return BlobProperties.getInstance().getProprietor(player);
     }
 }
