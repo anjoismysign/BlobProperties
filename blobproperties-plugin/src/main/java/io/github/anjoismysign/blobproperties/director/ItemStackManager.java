@@ -1,6 +1,6 @@
 package io.github.anjoismysign.blobproperties.director;
 
-import io.github.anjoismysign.bloblib.objects.SerializableItem;
+import io.github.anjoismysign.bloblib.middleman.itemstack.ItemStackReader;
 import io.github.anjoismysign.bloblib.utilities.StringUtil;
 import io.github.anjoismysign.blobproperties.entity.InternalProperty;
 import io.github.anjoismysign.blobproperties.entity.ItemType;
@@ -22,21 +22,22 @@ public class ItemStackManager extends PropertiesManager {
         loadItemStacks();
     }
 
+    @SuppressWarnings("DataFlowIssue")
     public void loadItemStacks() {
         equipment = new HashMap<>();
         YamlConfiguration items = YamlConfiguration.loadConfiguration(getManagerDirector().getLegacyFileManager().getItems());
-        setItem(SerializableItem.fromConfigurationSection(items
-                        .getConfigurationSection("PublicProperties-DoorManager")),
+        setItem(ItemStackReader.OMNI_STACK(items
+                        .getConfigurationSection("PublicProperties-DoorManager"), null).getCopy(),
                 ItemType.PUBLIC_PROPERTY_DOOR_MANAGER);
-        setItem(SerializableItem.fromConfigurationSection(items
-                        .getConfigurationSection("PrivateProperties-DoorManager")),
-                ItemType.PRIVATE_PROPERTY_DOOR_MANAGER);
-        setItem(SerializableItem.fromConfigurationSection(items
-                        .getConfigurationSection("PublicProperties-ContainerManager")),
+        setItem(ItemStackReader.OMNI_STACK(items
+                        .getConfigurationSection("PublicProperties-ContainerManager"), null).getCopy(),
                 ItemType.PUBLIC_PROPERTY_CONTAINER_MANAGER);
-        setItem(SerializableItem.fromConfigurationSection(items
-                        .getConfigurationSection("PrivateProperties-ContainerManager")),
-                ItemType.PRIVATE_PROPERTY_CONTAINER_MANAGER);
+//        setItem(ItemStackReader.OMNI_STACK(items
+//                        .getConfigurationSection("PrivateProperties-DoorManager"), null).getCopy(),
+//                ItemType.PRIVATE_PROPERTY_DOOR_MANAGER);
+//        setItem(ItemStackReader.OMNI_STACK(items
+//                        .getConfigurationSection("PrivateProperties-ContainerManager"), null).getCopy(),
+//                ItemType.PRIVATE_PROPERTY_CONTAINER_MANAGER);
     }
 
     private void setItem(ItemStack itemStack, ItemType itemType) {
