@@ -1,6 +1,6 @@
 package io.github.anjoismysign.blobproperties.director;
 
-import io.github.anjoismysign.bloblib.managers.asset.BukkitIdentityManager;
+import io.github.anjoismysign.bloblib.manager.asset.BukkitIdentityManager;
 import io.github.anjoismysign.blobproperties.BlobProperties;
 import io.github.anjoismysign.blobproperties.api.Property;
 import io.github.anjoismysign.blobproperties.api.PropertyManager;

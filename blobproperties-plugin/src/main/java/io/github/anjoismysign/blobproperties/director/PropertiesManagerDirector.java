@@ -1,7 +1,7 @@
 package io.github.anjoismysign.blobproperties.director;
 
-import io.github.anjoismysign.bloblib.entities.BlobPHExpansion;
-import io.github.anjoismysign.bloblib.entities.GenericManagerDirector;
+import io.github.anjoismysign.bloblib.manager.GenericManagerDirector;
+import io.github.anjoismysign.bloblib.placeholderapi.BlobPHExpansion;
 import io.github.anjoismysign.blobproperties.BlobProperties;
 import io.github.anjoismysign.blobproperties.director.manager.ConfigManager;
 import io.github.anjoismysign.blobproperties.director.manager.ListenerManager;

@@ -1,6 +1,6 @@
 package io.github.anjoismysign.blobproperties.director.manager;
 
-import io.github.anjoismysign.bloblib.managers.BlobPlugin;
+import io.github.anjoismysign.bloblib.manager.BlobPlugin;
 import io.github.anjoismysign.blobproperties.director.PropertiesManager;
 import io.github.anjoismysign.blobproperties.director.PropertiesManagerDirector;
 import io.github.anjoismysign.blobproperties.numberformat.BlobTycoon;

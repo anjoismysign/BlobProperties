@@ -1,7 +1,7 @@
 package io.github.anjoismysign.blobproperties.director;
 
 import io.github.anjoismysign.bloblib.middleman.itemstack.ItemStackReader;
-import io.github.anjoismysign.bloblib.utilities.StringUtil;
+import io.github.anjoismysign.bloblib.utility.StringUtil;
 import io.github.anjoismysign.blobproperties.entity.InternalProperty;
 import io.github.anjoismysign.blobproperties.entity.ItemType;
 import io.github.anjoismysign.blobproperties.entity.PropertiesNamespacedKeys;
