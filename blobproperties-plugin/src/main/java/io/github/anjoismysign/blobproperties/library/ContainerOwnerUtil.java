@@ -1,6 +1,6 @@
 package io.github.anjoismysign.blobproperties.library;
 
-import io.github.anjoismysign.bloblib.utilities.ItemStackUtil;
+import io.github.anjoismysign.bloblib.utility.ItemStackUtil;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.ByteArrayInputStream;

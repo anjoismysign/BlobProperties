@@ -1,8 +1,8 @@
 package io.github.anjoismysign.blobproperties.entity;
 
 import io.github.anjoismysign.bloblib.api.BlobLibTranslatableAPI;
-import io.github.anjoismysign.bloblib.entities.BlobPHExpansion;
-import io.github.anjoismysign.bloblib.entities.translatable.TranslatableSnippet;
+import io.github.anjoismysign.bloblib.placeholderapi.BlobPHExpansion;
+import io.github.anjoismysign.bloblib.translatable.TranslatableSnippet;
 import io.github.anjoismysign.blobproperties.BlobProperties;
 import io.github.anjoismysign.blobproperties.api.Party;
 import io.github.anjoismysign.blobproperties.api.SerializableProprietor;

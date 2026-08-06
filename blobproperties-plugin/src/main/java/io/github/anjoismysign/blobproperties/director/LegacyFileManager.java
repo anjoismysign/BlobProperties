@@ -1,6 +1,6 @@
 package io.github.anjoismysign.blobproperties.director;
 
-import io.github.anjoismysign.bloblib.utilities.ResourceUtil;
+import io.github.anjoismysign.bloblib.utility.ResourceUtil;
 import io.github.anjoismysign.blobproperties.BlobProperties;
 import org.bukkit.configuration.file.YamlConfiguration;
 
