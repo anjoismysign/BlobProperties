@@ -6,7 +6,7 @@
 
     <groupId>io.github.anjoismysign</groupId>
     <artifactId>blobproperties</artifactId>
-    <version>1.0.4</version>
+    <version>1.702.0</version>
     <packaging>pom</packaging>
     <modules>
         <module>blobproperties-api</module>
@@ -36,7 +36,7 @@
         <dependency>
             <groupId>io.github.anjoismysign</groupId>
             <artifactId>bloblib</artifactId>
-            <version>1.701</version>
+            <version>1.702</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
