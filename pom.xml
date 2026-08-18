@@ -41,4 +41,12 @@
         </dependency>
     </dependencies>
 
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub anjoismysign Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/anjoismysign/BlobProperties</url>
+        </repository>
+    </distributionManagement>
+
 </project>
