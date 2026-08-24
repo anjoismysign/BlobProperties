@@ -11,6 +11,8 @@ import io.github.anjoismysign.blobproperties.api.Proprietor;
 import io.github.anjoismysign.blobproperties.api.ProprietorContainer;
 import io.github.anjoismysign.blobproperties.api.SerializableProprietor;
 import io.github.anjoismysign.blobproperties.event.ProprietorJoinSessionEvent;
+import io.github.anjoismysign.blobproperties.event.ProprietorStepInEvent;
+import io.github.anjoismysign.blobproperties.event.ProprietorStepOutEvent;
 import io.github.anjoismysign.blobproperties.listener.PublicProprietorListener;
 import io.github.anjoismysign.psa.PostLoadable;
 import io.github.anjoismysign.psa.PreUpdatable;
@@ -232,12 +234,20 @@ public class ProprietorProfile implements Crudable, SerializableProprietor, Play
         setVanished(true);
         if (location == null) {
             property.placeInside(player);
-        } else player.teleport(location);
+        } else {
+            player.teleport(location);
+        }
         Party party = getCurrentlyAttending();
-        if (party instanceof InternalParty internalParty) internalParty.stepIn(this);
+        ProprietorStepInEvent proprietorStepInEvent;
+        if (party instanceof InternalParty internalParty) {
+            internalParty.stepIn(this);
+            proprietorStepInEvent = new ProprietorStepInEvent(this, property, internalParty);
+        }
         else {
             BlobLibSoundAPI.getInstance().getSound("Property.Door-Inside").handle(player);
+            proprietorStepInEvent = new ProprietorStepInEvent(this, property, null);
         }
+        Bukkit.getPluginManager().callEvent(proprietorStepInEvent);
     }
 
     public void stepOut(@Nullable Location location) {
@@ -253,12 +263,16 @@ public class ProprietorProfile implements Crudable, SerializableProprietor, Play
             property.placeOutside(player);
         }
         Party party = getCurrentlyAttending();
+        ProprietorStepOutEvent proprietorStepOutEvent;
         if (party instanceof InternalParty internalParty) {
             internalParty.stepOut(this, false);
+            proprietorStepOutEvent = new ProprietorStepOutEvent(this, property, internalParty);
         } else {
             BlobLibSoundAPI.getInstance().getSound("Property.Door-Outside").handle(player);
             setVanished(false);
+            proprietorStepOutEvent = new ProprietorStepOutEvent(this, property, null);
         }
+        Bukkit.getPluginManager().callEvent(proprietorStepOutEvent);
         PublicProprietorListener.removeFromPublicTracking(player);
         setCurrentlyAt((Property) null);
     }
