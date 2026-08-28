@@ -12,12 +12,7 @@ public class PropertiesManagerDirector extends GenericManagerDirector<BlobProper
 
     public PropertiesManagerDirector(BlobProperties blobPlugin) {
         super(blobPlugin);
-        registerBlobMessage("es_es/blobproperties_lang");
-        registerBlobInventory("es_es/PublicPropertyBuilder");
-        registerTranslatableSnippet("es_es/blobproperties_translatable_snippets");
-        registerTranslatableBlock("es_es/blobproperties_translatable_blocks");
-        registerBlobInventory("PublicPropertyBuy", "es_es/PublicPropertyBuy");
-        registerBlobInventory("PublicPropertyHome", "es_es/PublicPropertyHome");
+        registerBlobInventory("PublicPropertyBuy", "PublicPropertyHome");
         legacyFileManager = new LegacyFileManager(this);
         addManager("ItemStackManager", new ItemStackManager(this));
         addManager("ConfigManager", new ConfigManager(this));

@@ -1,12 +1,10 @@
 package io.github.anjoismysign.blobproperties.entity;
 
-import io.github.anjoismysign.bloblib.api.BlobLibSoundAPI;
 import io.github.anjoismysign.bloblib.domain.PlayerDecorator;
 import io.github.anjoismysign.bloblib.domain.PlayerDecoratorAware;
 import io.github.anjoismysign.blobproperties.BlobProperties;
 import io.github.anjoismysign.blobproperties.api.Party;
 import io.github.anjoismysign.blobproperties.api.Property;
-import io.github.anjoismysign.blobproperties.api.PropertyMeta;
 import io.github.anjoismysign.blobproperties.api.Proprietor;
 import io.github.anjoismysign.blobproperties.api.ProprietorContainer;
 import io.github.anjoismysign.blobproperties.api.SerializableProprietor;

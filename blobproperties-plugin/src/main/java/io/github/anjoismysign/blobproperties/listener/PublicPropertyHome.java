@@ -52,10 +52,11 @@ public class PublicPropertyHome extends PropertiesInventoryHandler {
         registry.onClick("My-Properties", event -> {
             Player player = processor.toPlayer(event);
             SerializableProprietor proprietor = processor.toProprietor(player);
-            if (proprietor == null)
+            if (proprietor == null) {
                 return;
+            }
             clickSound().handle(player);
-            inventoryAPI.selector(player,
+            inventoryAPI.detailedSelector(player,
                     "Property",
                     () -> proprietor.getProperties().stream().toList(),
                     property -> {
@@ -71,15 +72,17 @@ public class PublicPropertyHome extends PropertiesInventoryHandler {
                         modder.displayName("&f" + property.displayName(player));
                         modder.lore(property.lore(player));
                         return itemStack;
-                    });
+                    },
+                    this::open);
         });
         registry.onClick("Sell-Properties", event -> {
             Player player = processor.toPlayer(event);
             SerializableProprietor proprietor = processor.toProprietor(player);
-            if (proprietor == null)
+            if (proprietor == null) {
                 return;
+            }
             clickSound().handle(player);
-            inventoryAPI.selector(player,
+            inventoryAPI.detailedSelector(player,
                     "Property",
                     () -> proprietor.getProperties().stream().toList(),
                     property -> {
@@ -100,7 +103,8 @@ public class PublicPropertyHome extends PropertiesInventoryHandler {
                         modder.displayName("&f" + property.displayName(player));
                         modder.lore(property.lore(player));
                         return itemStack;
-                    });
+                    },
+                    this::open);
         });
     }
 
