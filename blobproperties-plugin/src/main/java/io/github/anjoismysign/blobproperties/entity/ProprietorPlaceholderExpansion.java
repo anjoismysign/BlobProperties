@@ -47,7 +47,7 @@ public class ProprietorPlaceholderExpansion {
                 if (player == null){
                     return notOnline().get();
                 }
-                return proprietor.isAttendingParty() ? getSnippet("BlobLib.Boolean-True", player)
+                return proprietor.getCurrentlyAttending() != null ? getSnippet("BlobLib.Boolean-True", player)
                         .get() : getSnippet("BlobLib.Boolean-False", player)
                         .get();
             });

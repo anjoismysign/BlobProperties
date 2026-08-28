@@ -26,28 +26,6 @@ public interface Proprietor {
     UUID getAddress();
 
     /**
-     * Checks if the player is attending a party.
-     *
-     * @return True if the player is attending a party. False otherwise.
-     */
-    boolean isAttendingParty();
-
-    /**
-     * Checks if the player is the leader of the party they are attending.
-     *
-     * @return True if the player is the leader of the party they are attending.
-     * False if they are not attending a party or are not the leader.
-     */
-    default boolean isPartyLeader() {
-        if (!isAttendingParty())
-            return false;
-        @Nullable Party party = getCurrentlyAttending();
-        if (party == null)
-            return false;
-        return party.getOwner().getAddress().equals(getAddress());
-    }
-
-    /**
      * Retrieves the property the Proprietor is currently inside.
      *
      * @return The property if the Proprietor is inside a property.
@@ -103,14 +81,15 @@ public interface Proprietor {
     default boolean isAttendingSameParty(Proprietor other) {
         if (other == null)
             return false;
-        if (!other.isAttendingParty())
+        @Nullable Party otherParty = other.getCurrentlyAttending();
+        if (otherParty == null) {
             return false;
-        if (!isAttendingParty())
-            return false;
+        }
         @Nullable Party party = getCurrentlyAttending();
-        if (party == null)
+        if (party == null) {
             return false;
-        return party.getOwner().getAddress().equals(other.getCurrentlyAttending().getOwner().getAddress());
+        }
+        return party.getOwner().getAddress().equals(otherParty.getOwner().getAddress());
     }
 
     /**
@@ -126,20 +105,21 @@ public interface Proprietor {
      * This will set the proprietor's current property to the specified property
      * and update their last known property.
      *
-     * @param type     The type of property to step into.
-     * @param id       The identifier of the property to step into.
+     * @param property The property to step into.
      * @param location The location to step into.
      *                 Can be null and defaults to the property location.
+     * @return true if successful, false otherwise
      */
-    void stepIn(@NotNull PropertyMeta type, @NotNull String id, @Nullable Location location);
+    boolean stepIn(@NotNull Property property, @Nullable Location location);
 
     /**
      * Steps out of the current property.
      * This will remove the proprietor from the property and update their last known property.
      *
      * @param location The location to step out to, can be null if not specified.
+     * @return true if successful, false otherwise
      */
-    void stepOut(@Nullable Location location);
+    boolean stepOut(@Nullable Location location);
 
     void addProperty(@NotNull Property property);
 

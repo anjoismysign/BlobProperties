@@ -63,7 +63,7 @@ public class PublicPropertyHome extends PropertiesInventoryHandler {
                         if (proprietor.getCurrentlyAt() != null)
                             proprietor.stepOut(null);
                         player.closeInventory();
-                        internalProperty.placeOutside(player);
+                        internalProperty.placeOutside(player, null);
                     },
                     property -> {
                         ItemStack itemStack = new ItemStack(Material.IRON_DOOR);

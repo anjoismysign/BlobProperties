@@ -41,7 +41,7 @@ public class ProprietorProfile implements Crudable, SerializableProprietor, Play
     private transient @Nullable ProprietorContainer currentContainer;
     private @Nullable PropertyReference currentlyAt;
     private @Nullable PropertyReference lastKnownAt;
-    private transient @Nullable Party currentlyAttending;
+    private transient @Nullable InternalParty currentlyAttending;
 
     private transient PlayerDecorator playerDecorator;
     private transient BlobProperties plugin;
@@ -119,10 +119,6 @@ public class ProprietorProfile implements Crudable, SerializableProprietor, Play
         this.currentContainer = currentContainer;
     }
 
-    public boolean isAttendingParty() {
-        return getCurrentlyAttending() != null;
-    }
-
     @Nullable
     public InternalProperty getCurrentlyAt() {
         return currentlyAt == null ? null : currentlyAt.toInternalProperty();
@@ -134,10 +130,7 @@ public class ProprietorProfile implements Crudable, SerializableProprietor, Play
      * @param currentlyAt The current property. null if not inside a property.
      */
     public void setCurrentlyAt(@Nullable Property currentlyAt) {
-        setCurrentlyAt(PropertyReference.ofProperty(currentlyAt));
-    }
-
-    public void setCurrentlyAt(@Nullable PropertyReference reference) {
+        @Nullable PropertyReference reference = PropertyReference.ofProperty(currentlyAt);
         this.currentlyAt = reference;
         if (reference != null) {
             InternalProperty property = reference.toInternalProperty();
@@ -158,7 +151,7 @@ public class ProprietorProfile implements Crudable, SerializableProprietor, Play
     }
 
     @Nullable
-    public Party getCurrentlyAttending() {
+    public InternalParty getCurrentlyAttending() {
         return currentlyAttending;
     }
 
@@ -189,10 +182,11 @@ public class ProprietorProfile implements Crudable, SerializableProprietor, Play
         return propertyOwner.getAllProperties();
     }
 
-    @Override
     public void setVanished(boolean vanished) {
         Player proprietor = getPlayer();
-        if (proprietor == null || !proprietor.isOnline()) return;
+        if (proprietor == null || !proprietor.isOnline()) {
+            return;
+        }
         if (vanished) {
             Bukkit.getOnlinePlayers().forEach(online -> online.hidePlayer(plugin, proprietor));
         } else {
@@ -200,11 +194,12 @@ public class ProprietorProfile implements Crudable, SerializableProprietor, Play
         }
     }
 
-    public void setCurrentlyAttending(@Nullable Party currentlyAttending) {
+    public void setCurrentlyAttending(@Nullable Party party) {
+        @Nullable InternalParty currentlyAttending = party == null ? null : (InternalParty) party;
         if (currentlyAttending != null && getCurrentlyAttending() != null) {
-            InternalParty previous = (InternalParty) getCurrentlyAttending();
+            InternalParty previous = getCurrentlyAttending();
             previous.unallow(this);
-            previous.stepOut(this, false);
+            previous.stepOut(this, false, false);
         }
         this.currentlyAttending = currentlyAttending;
 
@@ -220,60 +215,58 @@ public class ProprietorProfile implements Crudable, SerializableProprietor, Play
         Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> pendingInvites.remove(player.getName()), 20 * plugin.getManagerDirector().getConfigManager().getPendingInvitesExpiration());
     }
 
-    public void stepIn(@NotNull PropertyMeta type, @NotNull String id, @Nullable Location location) {
-        @Nullable InternalProperty property = (InternalProperty) plugin.getManagerDirector().getPropertyShardManager().getPropertyByMeta(type, id);
-        Objects.requireNonNull(property, "PublicProperty with id '" + id + "' does not exist.");
+    public boolean stepIn(@NotNull Property to, final @Nullable Location location) {
+        @Nullable InternalProperty property = (InternalProperty) to;
         Player player = getPlayer();
         var logger = plugin.getLogger();
         if (player == null){
             logger.info("player == null");
-            return;
+            return false;
         }
-        PublicProprietorListener.addToPublicTracking(player);
-        setCurrentlyAt(property);
-        setVanished(true);
-        if (location == null) {
-            property.placeInside(player);
-        } else {
-            player.teleport(location);
-        }
-        Party party = getCurrentlyAttending();
-        ProprietorStepInEvent proprietorStepInEvent;
-        if (party instanceof InternalParty internalParty) {
-            internalParty.stepIn(this);
-            proprietorStepInEvent = new ProprietorStepInEvent(this, property, internalParty);
-        }
-        else {
-            BlobLibSoundAPI.getInstance().getSound("Property.Door-Inside").handle(player);
-            proprietorStepInEvent = new ProprietorStepInEvent(this, property, null);
-        }
+        @Nullable InternalParty party = getCurrentlyAttending();
+        ProprietorStepInEvent proprietorStepInEvent = new ProprietorStepInEvent(this, property, party);
         Bukkit.getPluginManager().callEvent(proprietorStepInEvent);
+        if (proprietorStepInEvent.isCancelled()){
+            return false;
+        }
+        if (!property.placeInside(player, location)){
+            return false;
+        }
+        if (!proprietorStepInEvent.isAssistingToParty()) {
+            setVanished(true);
+        } else {
+            party.stepIn(this);
+        }
+        setCurrentlyAt(property);
+        PublicProprietorListener.addToPublicTracking(player);
+        return true;
     }
 
-    public void stepOut(@Nullable Location location) {
+    public boolean stepOut(@Nullable Location location) {
         InternalProperty property = getCurrentlyAt();
-        if (property == null) return;
+        if (property == null) {
+            return false;
+        }
         Player player = getPlayer();
         if (player == null){
-            return;
+            return false;
         }
-        if (location != null) {
-            player.teleport(location);
-        } else {
-            property.placeOutside(player);
+        @Nullable InternalParty party = getCurrentlyAttending();
+        ProprietorStepOutEvent stepOutEvent = new ProprietorStepOutEvent(this, property, party);
+        Bukkit.getPluginManager().callEvent(stepOutEvent);
+        if (stepOutEvent.isCancelled()){
+            return false;
         }
-        Party party = getCurrentlyAttending();
-        ProprietorStepOutEvent proprietorStepOutEvent;
-        if (party instanceof InternalParty internalParty) {
-            internalParty.stepOut(this, false);
-            proprietorStepOutEvent = new ProprietorStepOutEvent(this, property, internalParty);
-        } else {
-            BlobLibSoundAPI.getInstance().getSound("Property.Door-Outside").handle(player);
+        if (!property.placeOutside(player, location)){
+            return false;
+        }
+        if (!stepOutEvent.isAssistingToParty()){
             setVanished(false);
-            proprietorStepOutEvent = new ProprietorStepOutEvent(this, property, null);
+        } else {
+            party.stepOut(this, false, false);
         }
-        Bukkit.getPluginManager().callEvent(proprietorStepOutEvent);
+        setCurrentlyAt(null);
         PublicProprietorListener.removeFromPublicTracking(player);
-        setCurrentlyAt((Property) null);
+        return true;
     }
 }

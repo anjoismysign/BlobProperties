@@ -17,8 +17,6 @@ public interface SerializableProprietor extends Proprietor {
 
     void setCurrentContainer(@Nullable ProprietorContainer currentContainer);
 
-    void setVanished(boolean vanished);
-
     void setCurrentlyAt(@Nullable Property currentlyAt);
 
     void setCurrentlyAttending(@Nullable Party currentlyAttending);

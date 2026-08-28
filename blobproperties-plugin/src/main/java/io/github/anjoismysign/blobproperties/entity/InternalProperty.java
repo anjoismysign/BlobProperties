@@ -107,32 +107,43 @@ public interface InternalProperty extends Property {
         return BlobLibTranslatableAPI.getInstance().getTranslatablePositionable(reference, locale);
     }
 
-    default boolean placeOutside(@NotNull Player player) {
-        TranslatablePositionable outside = getOutside(player.getLocale());
-        Location playerLocation = player.getLocation();
-        float yaw = playerLocation.getYaw();
-        float pitch = playerLocation.getPitch();
-        Location location = outside.get().toLocation().clone();
-        location.setYaw(yaw);
-        location.setPitch(pitch);
+    default boolean placeOutside(@NotNull Player player,
+                                 @Nullable Location location) {
+        if (location == null){
+            @Nullable TranslatablePositionable outside = getOutside(player.getLocale());
+            if (outside == null){
+                String reference = identifier() + "_outside";
+                BlobProperties.getInstance().getLogger().info("'"+reference+"' TranslatablePositionable doesn't exist");
+                return false;
+            }
+            location = outside.get().toLocation().clone();
+            Location playerLocation = player.getLocation();
+            float yaw = playerLocation.getYaw();
+            float pitch = playerLocation.getPitch();
+            location.setYaw(yaw);
+            location.setPitch(pitch);
+        }
         player.teleport(location);
         BlobLibSoundAPI.getInstance().getSound("Property.Door-Outside").handle(player);
         return true;
     }
 
-    default boolean placeInside(@NotNull Player player) {
-        @Nullable TranslatablePositionable inside = getInside(player.getLocale());
-        if (inside == null){
-            String reference = identifier() + "_inside";
-            BlobProperties.getInstance().getLogger().info("'"+reference+"' TranslatablePositionable doesn't exist");
-            return false;
+    default boolean placeInside(@NotNull Player player,
+                                @Nullable Location location) {
+        if (location == null){
+            @Nullable TranslatablePositionable inside = getInside(player.getLocale());
+            if (inside == null){
+                String reference = identifier() + "_inside";
+                BlobProperties.getInstance().getLogger().info("'"+reference+"' TranslatablePositionable doesn't exist");
+                return false;
+            }
+            location = inside.get().toLocation().clone();
+            Location playerLocation = player.getLocation();
+            float yaw = playerLocation.getYaw();
+            float pitch = playerLocation.getPitch();
+            location.setYaw(yaw);
+            location.setPitch(pitch);
         }
-        Location playerLocation = player.getLocation();
-        float yaw = playerLocation.getYaw();
-        float pitch = playerLocation.getPitch();
-        Location location = inside.get().toLocation().clone();
-        location.setYaw(yaw);
-        location.setPitch(pitch);
         player.teleport(location);
         BlobLibSoundAPI.getInstance().getSound("Property.Door-Inside").handle(player);
         return true;

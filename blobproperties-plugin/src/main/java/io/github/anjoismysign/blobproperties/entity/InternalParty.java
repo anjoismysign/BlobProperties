@@ -1,6 +1,8 @@
 package io.github.anjoismysign.blobproperties.entity;
 
 import io.github.anjoismysign.bloblib.api.BlobLibMessageAPI;
+import io.github.anjoismysign.bloblib.positionable.Positionable;
+import io.github.anjoismysign.bloblib.translatable.TranslatablePositionable;
 import io.github.anjoismysign.blobproperties.BlobProperties;
 import io.github.anjoismysign.blobproperties.api.BlobPropertiesAPI;
 import io.github.anjoismysign.blobproperties.api.Party;
@@ -10,8 +12,10 @@ import io.github.anjoismysign.blobproperties.api.SerializableProprietor;
 import io.github.anjoismysign.blobproperties.director.InternalPartyManager;
 import io.github.anjoismysign.blobproperties.listener.PublicProprietorListener;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -23,9 +27,9 @@ import java.util.stream.Collectors;
 public class InternalParty implements Party {
 
     @NotNull
-    private final Property property;
+    private final InternalProperty property;
     private final String ownerName;
-    private final SerializableProprietor owner;
+    private final ProprietorProfile owner;
     private final Set<UUID> allowed;
     private final Set<UUID> inside;
 
@@ -40,8 +44,8 @@ public class InternalParty implements Party {
      * @param owner    the owner of the party
      * @param property the property which is holding a party
      */
-    public InternalParty(@NotNull SerializableProprietor owner,
-                         @NotNull Property property) {
+    public InternalParty(@NotNull ProprietorProfile owner,
+                         @NotNull InternalProperty property) {
         this.owner = owner;
         this.ownerName = Objects.requireNonNull(owner.getPlayer()).getName();
         this.property = property;
@@ -61,16 +65,13 @@ public class InternalParty implements Party {
     /**
      * Will disband the party and teleport all participants outside the property.
      * It removes the party from the {@link InternalPartyManager}.
-     *
-     * @param kickInside whether to kick all participants inside the property
      */
-    public void disband(boolean kickInside) {
-        if (kickInside)
-            forEachInsideProprietor(proprietor -> {
-                ((InternalProperty) getProperty()).placeOutside(Objects.requireNonNull(proprietor.getPlayer()));
-                stepOut(proprietor, true);
-                proprietor.setCurrentlyAt(null);
-            });
+    public void disband() {
+        forEachInsideProprietor(proprietor -> {
+            ((InternalProperty) getProperty()).placeOutside(Objects.requireNonNull(proprietor.getPlayer()), null);
+            stepOut(proprietor, true, false);
+            proprietor.setCurrentlyAt(null);
+        });
         forEachAllowedProprietor(proprietor -> {
             Player player = proprietor.getPlayer();
             if (player == null || !player.isOnline())
@@ -82,15 +83,6 @@ public class InternalParty implements Party {
         inside.clear();
         allowed.clear();
         partyManager().removeParty(this);
-    }
-
-    /**
-     * Will disband the party and teleport all participants outside the property.
-     * It removes the party from the {@link InternalPartyManager}.
-     * It will also kick all participants inside the property.
-     */
-    public void disband() {
-        disband(true);
     }
 
     /**
@@ -110,8 +102,9 @@ public class InternalParty implements Party {
      * @return true if the user is allowed to step into the party, false otherwise
      */
     public boolean stepIn(SerializableProprietor proprietor) {
-        if (!isAllowed(proprietor))
+        if (!isAllowed(proprietor)) {
             return false;
+        }
         addParticipant(proprietor);
         return true;
     }
@@ -123,28 +116,18 @@ public class InternalParty implements Party {
      * @param force          whether to force teleport player outside the property
      * @param leaveSession   whether to leaveSession logic
      */
-    public void stepOut(SerializableProprietor oldParticipant, boolean force, boolean leaveSession) {
+    public void stepOut(ProprietorProfile oldParticipant, boolean force, boolean leaveSession) {
         Player oldPlayer = oldParticipant.getPlayer();
         if (oldPlayer == null || !oldPlayer.isOnline())
             return;
         Property at = oldParticipant.getCurrentlyAt();
-        if (force ||
-                at != null && at.identifier().equals(property.identifier())) {
+        if (force || at != null && at.equals(property)) {
             oldParticipant.setVanished(false);
         }
-        if (leaveSession)
+        if (leaveSession) {
             return;
+        }
         removeParticipant(oldPlayer);
-    }
-
-    /**
-     * Steps provided user out of the property which is holding a party.
-     *
-     * @param oldParticipant the user that is trying to step out of the party
-     * @param force          whether to force teleport player outside the property
-     */
-    public void stepOut(SerializableProprietor oldParticipant, boolean force) {
-        stepOut(oldParticipant, force, false);
     }
 
     private void removeParticipant(Player oldPlayer) {
@@ -163,8 +146,9 @@ public class InternalParty implements Party {
 
     private void addParticipant(SerializableProprietor newParticipant) {
         Player newParticipantPlayer = newParticipant.getPlayer();
-        if (newParticipantPlayer == null || !newParticipantPlayer.isOnline())
+        if (newParticipantPlayer == null || !newParticipantPlayer.isOnline()) {
             return;
+        }
         inside.add(newParticipant.getAddress());
         Bukkit.getOnlinePlayers().forEach(online -> online.hidePlayer(BlobProperties.getInstance(), newParticipantPlayer));
         forEachInside(currentParticipant -> {
@@ -224,14 +208,14 @@ public class InternalParty implements Party {
         return allowed.stream().filter(inside::contains).map(Bukkit::getPlayer).collect(Collectors.toSet());
     }
 
-    private void forEachInsideProprietor(Consumer<SerializableProprietor> consumer) {
+    private void forEachInsideProprietor(Consumer<ProprietorProfile> consumer) {
         Set<UUID> clone = new HashSet<>(inside);
         clone.forEach(uuid -> {
             var player = Bukkit.getPlayer(uuid);
-            if (player == null){
+            if (player == null) {
                 return;
             }
-            SerializableProprietor proprietor = BlobProperties.getInstance().getProprietor(player);
+            ProprietorProfile proprietor = BlobProperties.getInstance().getProprietor(player);
             if (proprietor == null) {
                 return;
             }
@@ -242,7 +226,7 @@ public class InternalParty implements Party {
     public void forEachAllowedProprietor(Consumer<SerializableProprietor> consumer) {
         allowed.forEach(uuid -> {
             var player = Bukkit.getPlayer(uuid);
-            if (player == null){
+            if (player == null) {
                 return;
             }
             SerializableProprietor proprietor = BlobProperties.getInstance().getProprietor(player);
@@ -262,7 +246,7 @@ public class InternalParty implements Party {
     public void forEachAllowed(Consumer<Player> consumer) {
         allowed.forEach(uuid -> {
             var player = Bukkit.getPlayer(uuid);
-            if (player == null){
+            if (player == null) {
                 return;
             }
             SerializableProprietor proprietor = BlobProperties.getInstance().getProprietor(player);
@@ -275,62 +259,74 @@ public class InternalParty implements Party {
 
     /**
      * Will lodge the provided guest into the party.
+     * Guest is required to be allowed in the party (the owner using "party invite" command).
      *
      * @param guest the guest
      * @return true if the guest was lodged, false otherwise
      */
-    public boolean lodge(@NotNull SerializableProprietor guest) {
+    public boolean lodge(@NotNull ProprietorProfile guest) {
         Objects.requireNonNull(guest);
         Player guestPlayer = guest.getPlayer();
         if (guestPlayer == null || !guestPlayer.isOnline()) {
             return false;
         }
-        SerializableProprietor owner = (SerializableProprietor) getOwner();
+        ProprietorProfile owner = (ProprietorProfile) getOwner();
         Player ownerPlayer = owner.getPlayer();
         if (ownerPlayer == null) {
             return false;
         }
-        boolean vanish = (owner.getCurrentlyAt() == null &&
-                !owner.getCurrentlyAt().identifier().equals(getProperty().identifier()));
+        final Location location;
+
+        @Nullable TranslatablePositionable headingTo = property.getInside("en_us");
+        @Nullable Positionable positionable = headingTo == null ? null : headingTo.get();
+        final Location ownerLocation = ownerPlayer.getLocation();
+        if (positionable == null) {
+            location = ownerLocation.clone();
+        } else {
+            final Location positionableLocation = positionable.toLocation();
+            if (positionableLocation.getWorld() == null) {
+                positionableLocation.setWorld(guestPlayer.getWorld());
+            }
+            location = positionableLocation;
+        }
         guest.setCurrentlyAttending(this);
-        guest.setVanished(vanish);
-        stepIn(guest);
-        guest.setCurrentlyAt(getProperty());
-        guestPlayer.teleport(ownerPlayer);
+        boolean successful = guest.stepIn(property, location);
+        if (!successful) {
+            guest.setCurrentlyAttending(null);
+            return false;
+        }
+
+        boolean allowed = stepIn(guest);
+        if (!allowed) {
+            return false;
+        }
+        if (!property.placeInside(guestPlayer, location)) {
+            removeParticipant(guestPlayer);
+            return false;
+        }
+        guest.setCurrentlyAt(property);
         PublicProprietorListener.addToPublicTracking(guestPlayer);
         return true;
     }
 
     /**
      * Will depart the provided guest from the party.
-     * Will kick guests based on leaveSession logic.
      *
      * @param guest        the guest
      * @param leaveSession whether to leaveSession logic
      * @return true if the guest was departed, false otherwise
      */
-    public boolean depart(@NotNull SerializableProprietor guest, boolean leaveSession) {
-        return depart(guest, leaveSession, leaveSession);
-    }
-
-    /**
-     * Will depart the provided guest from the party.
-     *
-     * @param guest        the guest
-     * @param leaveSession whether to leaveSession logic
-     * @param kickInside   whether to kick the guest inside the property
-     * @return true if the guest was departed, false otherwise
-     */
-    public boolean depart(@NotNull SerializableProprietor guest, boolean leaveSession, boolean kickInside) {
+    public boolean depart(@NotNull ProprietorProfile guest, boolean leaveSession) {
         Objects.requireNonNull(guest);
         Player guestPlayer = guest.getPlayer();
-        if (guestPlayer == null || !guestPlayer.isOnline())
+        if (guestPlayer == null || !guestPlayer.isOnline()) {
             return false;
+        }
         unallow(guest);
         guest.setCurrentlyAttending(null);
         stepOut(guest, true, leaveSession);
         guest.setCurrentlyAt(null);
-        ((InternalProperty) getProperty()).placeOutside(guestPlayer);
+        ((InternalProperty) getProperty()).placeOutside(guestPlayer, null);
         BlobLibMessageAPI messageAPI = BlobLibMessageAPI.getInstance();
         messageAPI
                 .getMessage("BlobProprietor.Leaving", guestPlayer)
@@ -344,8 +340,9 @@ public class InternalParty implements Party {
                 .replace("%player%", guestPlayer.getName())
                 .get()
                 .handle(allowed));
-        if (allowed.size() <= 1)
-            disband(kickInside);
+        if (allowed.size() <= 1){
+            disband();
+        }
         return true;
     }
 

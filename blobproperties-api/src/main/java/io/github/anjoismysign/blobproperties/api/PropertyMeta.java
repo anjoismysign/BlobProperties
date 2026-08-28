@@ -20,8 +20,4 @@ public interface PropertyMeta {
     @NotNull
     String typeName();
 
-    default boolean equals(@NotNull PropertyMeta other) {
-        return type().equals(other.type()) && typeName().equals(other.typeName());
-    }
-
 }

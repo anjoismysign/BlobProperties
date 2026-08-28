@@ -13,6 +13,7 @@ import io.github.anjoismysign.blobproperties.director.PropertiesManagerDirector;
 import io.github.anjoismysign.blobproperties.entity.InternalParty;
 import io.github.anjoismysign.blobproperties.entity.InternalProperty;
 import io.github.anjoismysign.blobproperties.entity.InternalPropertyType;
+import io.github.anjoismysign.blobproperties.entity.ProprietorProfile;
 import io.github.anjoismysign.skeramidcommands.command.Command;
 import io.github.anjoismysign.skeramidcommands.command.CommandTarget;
 import io.github.anjoismysign.skeramidcommands.commandtarget.BukkitCommandTarget;
@@ -66,11 +67,11 @@ public enum BlobPropertiesCommand {
             if (player == null) {
                 return;
             }
-            SerializableProprietor senderProprietor = BlobProperties.getInstance().getProprietor(player);
+            ProprietorProfile senderProprietor = BlobProperties.getInstance().getProprietor(player);
             if (senderProprietor == null){
                 return;
             }
-            InternalParty party = (InternalParty) senderProprietor.getCurrentlyAttending();
+            InternalParty party = senderProprietor.getCurrentlyAttending();
             if (party == null) {
                 MESSAGE_API.getMessage("BlobProprietor.Not-Attending-Party", player).handle(player);
                 return;
@@ -115,16 +116,16 @@ public enum BlobPropertiesCommand {
                 MESSAGE_API.getMessage("Player.Not-Found", player).handle(player);
                 return;
             }
-            SerializableProprietor host = BlobProperties.getInstance().getProprietor(player);
+            ProprietorProfile host = BlobProperties.getInstance().getProprietor(player);
             if (host == null){
                 return;
             }
-            SerializableProprietor guest = BlobProperties.getInstance().getProprietor(target);
+            ProprietorProfile guest = BlobProperties.getInstance().getProprietor(target);
             if (guest == null){
                 return;
             }
             InternalParty party = (InternalParty) host.getCurrentlyAttending();
-            Property currentlyAt = host.getCurrentlyAt();
+            InternalProperty currentlyAt = host.getCurrentlyAt();
             if (currentlyAt == null) {
                 MESSAGE_API.getMessage("BlobProprietor.Not-Inside-Property", player).handle(player);
                 return;
@@ -158,7 +159,7 @@ public enum BlobPropertiesCommand {
                 MESSAGE_API.getMessage("Player.Not-Found", player).handle(player);
                 return;
             }
-            SerializableProprietor guest = BlobProperties.getInstance().getProprietor(player);
+            ProprietorProfile guest = BlobProperties.getInstance().getProprietor(player);
             if (guest == null){
                 return;
             }
@@ -166,20 +167,20 @@ public enum BlobPropertiesCommand {
                 MESSAGE_API.getMessage("BlobProprietor.No-Pending-Invite", player).handle(player);
                 return;
             }
-            SerializableProprietor host = BlobProperties.getInstance().getProprietor(target);
+            ProprietorProfile host = BlobProperties.getInstance().getProprietor(target);
             if (host == null){
                 return;
             }
-            InternalParty party = (InternalParty) host.getCurrentlyAttending();
+            @Nullable InternalParty party = host.getCurrentlyAttending();
             if (party == null) {
                 MESSAGE_API.getMessage("BlobProprietor.Other-Not-Attending-Party", player)
                         .modify(s -> s.replace("%player%", target.getName()))
                         .handle(player);
                 return;
             }
-            InternalParty oldParty = (InternalParty) guest.getCurrentlyAttending();
+            @Nullable InternalParty oldParty = guest.getCurrentlyAttending();
             if (oldParty != null) {
-                oldParty.stepOut(guest, false);
+                oldParty.stepOut(guest, false, false);
                 oldParty.unallow(guest);
             }
             if (!party.lodge(guest) && guest.getCurrentlyAt() != null) {
@@ -201,26 +202,26 @@ public enum BlobPropertiesCommand {
                 MESSAGE_API.getMessage("Player.Not-Found", player).handle(player);
                 return;
             }
-            SerializableProprietor host = BlobProperties.getInstance().getProprietor(player);
+            ProprietorProfile host = BlobProperties.getInstance().getProprietor(player);
             if (host == null){
                 return;
             }
-            SerializableProprietor guest = BlobProperties.getInstance().getProprietor(target);
+            ProprietorProfile guest = BlobProperties.getInstance().getProprietor(target);
             if (guest == null){
                 return;
             }
-            InternalParty party = (InternalParty) host.getCurrentlyAttending();
+            @Nullable InternalParty party = host.getCurrentlyAttending();
             if (party == null) {
                 MESSAGE_API.getMessage("BlobProprietor.Not-Attending-Party", player).handle(player);
                 return;
             }
-            Party attending = guest.getCurrentlyAttending();
-            Property at = guest.getCurrentlyAt();
-            if (attending != null && attending.equals(party)
-                    && at != null &&
-                    at.identifier().equals(
-                            party.getProperty().identifier())) {
-                party.stepOut(guest, true);
+            @Nullable Party attending = guest.getCurrentlyAttending();
+            @Nullable Property at = guest.getCurrentlyAt();
+            if (attending != null
+                    && at != null
+                    && attending.equals(party)
+                    && at.equals(party.getProperty())) {
+                party.stepOut(guest, true, false);
             }
             guest.removePendingInvite(host);
             party.unallow(guest);

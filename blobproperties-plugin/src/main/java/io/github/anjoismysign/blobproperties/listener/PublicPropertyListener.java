@@ -40,6 +40,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
@@ -109,10 +110,12 @@ public class PublicPropertyListener extends ProprietorListener {
 
     @EventHandler
     public void onContainer(PlayerInteractEvent event) {
-        if (event.getAction() != Action.RIGHT_CLICK_BLOCK)
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
             return;
-        if (event.getHand() != EquipmentSlot.HAND)
+        }
+        if (event.getHand() != EquipmentSlot.HAND) {
             return;
+        }
         Player player = event.getPlayer();
         SerializableProprietor proprietor = BlobProperties.getInstance().getProprietor(player);
         if (proprietor == null){
@@ -120,12 +123,16 @@ public class PublicPropertyListener extends ProprietorListener {
         }
         Block block = event.getClickedBlock();
         InternalProperty property = shardManager.isContainer(block);
-        if (property == null)
+        if (property == null) {
             return;
-        if (!proprietor.ownsProperty(property))
+        }
+        if (!proprietor.ownsProperty(property)) {
             return;
-        if (proprietor.isAttendingParty() && !proprietor.isPartyLeader())
+        }
+        @Nullable Party party = proprietor.getCurrentlyAttending();
+        if (party != null && !party.getOwner().getAddress().equals(proprietor.getAddress())){
             return;
+        }
         event.setCancelled(true);
         String containerKey = property.getContainer(block);
         Location location = block.getLocation();
@@ -148,8 +155,7 @@ public class PublicPropertyListener extends ProprietorListener {
         Inventory inventory = InventoryUtil.build(items, title);
         player.openInventory(inventory);
         sound.handle(player, location);
-        proprietor.setCurrentContainer(
-                ProprietorContainer.of(containerKey, inventory, location));
+        proprietor.setCurrentContainer(ProprietorContainer.of(containerKey, inventory, location));
         BlobPropertiesInternalAPI.getInstance().sendOpenableChange(player, block, true);
     }
 
@@ -184,30 +190,28 @@ public class PublicPropertyListener extends ProprietorListener {
         Player player = event.getPlayer();
         Block block = event.getClickedBlock();
         if (action == Action.LEFT_CLICK_BLOCK) {
-            InternalProperty property = shardManager.isDoor(block);
+            final InternalProperty property = shardManager.isDoor(block);
             if (property == null)
                 return;
             handleDoor(player, block, false);
             return;
         }
         if (action == Action.RIGHT_CLICK_BLOCK) {
-            InternalProperty property = shardManager.isDoor(block);
+            final InternalProperty property = shardManager.isDoor(block);
             if (property == null) {
                 handleDoor(player, block, true);
                 return;
             }
-            SerializableProprietor proprietor = BlobProperties.getInstance().getProprietor(player);
+            final SerializableProprietor proprietor = BlobProperties.getInstance().getProprietor(player);
             if (proprietor == null){
                 return;
             }
-            Party attending = proprietor.getCurrentlyAttending();
-            InternalProperty attendingProperty = attending == null ? null : (InternalProperty) attending.getProperty();
-            String attendingPropertyKey = attendingProperty == null ? null : attendingProperty.identifier();
-            boolean notOwner = !proprietor.ownsProperty(property);
-            if (notOwner && attendingPropertyKey == null ||
-                    notOwner && !attendingPropertyKey.equals(property.identifier())) {
-                getManagerDirector().getListenerManager()
-                        .getPublicPropertyBuy().open(player, property);
+            final @Nullable Party attending = proprietor.getCurrentlyAttending();
+            final @Nullable InternalProperty attendingProperty = attending == null ? null : (InternalProperty) attending.getProperty();
+            final boolean notOwner = !proprietor.ownsProperty(property);
+            if (notOwner && attendingProperty == null ||
+                    notOwner && !attendingProperty.equals(property)) {
+                getManagerDirector().getListenerManager().getPublicPropertyBuy().open(player, property);
             } else {
                 Location playerLocation = player.getLocation();
                 Vector velocity = player.getVelocity();
@@ -219,7 +223,7 @@ public class PublicPropertyListener extends ProprietorListener {
                 }
                 BlockFace facing = BlobPropertiesInternalAPI.getInstance().doorFacing(player, door);
                 Location location;
-                Property currentlyAt = proprietor.getCurrentlyAt();
+                final @Nullable Property currentlyAt = proprietor.getCurrentlyAt();
                 boolean persistYawAndPitch = false;
                 TranslatablePositionable headingTo;
                 if (currentlyAt == null){
@@ -247,10 +251,12 @@ public class PublicPropertyListener extends ProprietorListener {
                     location.setYaw(yaw);
                     location.setPitch(pitch);
                 }
-                if (currentlyAt == null) {
-                    proprietor.stepIn(InternalPropertyType.PUBLIC, property.identifier(), location);
-                } else {
-                    proprietor.stepOut(location);
+                final boolean successful = currentlyAt == null ?
+                        proprietor.stepIn(property, location)
+                        :
+                        proprietor.stepOut(location);
+                if (!successful){
+                    return;
                 }
                 player.setVelocity(velocity);
             }

@@ -4,6 +4,7 @@ import org.bukkit.util.BlockVector;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public abstract class SimpleInternalProperty
@@ -57,5 +58,19 @@ public abstract class SimpleInternalProperty
     @Override
     public boolean useDefaultLore() {
         return useDefaultLore;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == null || getClass() != other.getClass()) {
+            return false;
+        }
+        SimpleInternalProperty that = (SimpleInternalProperty) other;
+        return getMeta() == that.getMeta() && Objects.equals(identifier, that.identifier);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(identifier, getMeta());
     }
 }

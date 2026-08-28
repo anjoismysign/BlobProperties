@@ -28,8 +28,7 @@ public enum InternalPropertyType implements PropertyMeta {
                     new HashSet<>(),
                     new HashMap<>(),
                     true)
-    )
-    ;
+    );
 
     private static final Map<String, InternalPropertyType> BY_TYPE_NAME = Stream.of(values())
             .collect(Collectors.toMap(PropertyMeta::typeName, Function.identity()));
