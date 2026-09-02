@@ -19,6 +19,7 @@ import io.github.anjoismysign.blobproperties.entity.InternalPropertyType;
 import io.github.anjoismysign.blobproperties.entity.ItemType;
 import io.github.anjoismysign.blobproperties.entity.PropertiesNamespacedKeys;
 import io.github.anjoismysign.blobproperties.entity.PropertyContainer;
+import io.github.anjoismysign.blobproperties.event.DoorInventoryEvent;
 import io.github.anjoismysign.blobproperties.library.InventoryUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -197,8 +198,12 @@ public class PublicPropertyListener extends ProprietorListener {
             final @Nullable Party attending = proprietor.getCurrentlyAttending();
             final @Nullable InternalProperty attendingProperty = attending == null ? null : (InternalProperty) attending.getProperty();
             final boolean notOwner = !proprietor.ownsProperty(property);
-            if (notOwner && attendingProperty == null ||
-                    notOwner && !attendingProperty.equals(property)) {
+            if (notOwner && (attendingProperty == null || !attendingProperty.equals(property))) {
+                DoorInventoryEvent doorInventoryEvent = new DoorInventoryEvent(proprietor, property);
+                Bukkit.getPluginManager().callEvent(doorInventoryEvent);
+                if (doorInventoryEvent.isCancelled()){
+                    return;
+                }
                 getManagerDirector().getListenerManager().getPublicPropertyBuy().open(player, property);
             } else {
                 Location playerLocation = player.getLocation();
