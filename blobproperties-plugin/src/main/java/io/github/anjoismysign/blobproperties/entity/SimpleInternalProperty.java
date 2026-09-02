@@ -1,5 +1,6 @@
 package io.github.anjoismysign.blobproperties.entity;
 
+import io.github.anjoismysign.blobproperties.api.Property;
 import org.bukkit.util.BlockVector;
 import org.jetbrains.annotations.NotNull;
 
@@ -62,11 +63,10 @@ public abstract class SimpleInternalProperty
 
     @Override
     public boolean equals(Object other) {
-        if (other == null || getClass() != other.getClass()) {
+        if (!(other instanceof Property that)){
             return false;
         }
-        SimpleInternalProperty that = (SimpleInternalProperty) other;
-        return getMeta() == that.getMeta() && Objects.equals(identifier, that.identifier);
+        return getMeta() == that.getMeta() && Objects.equals(identifier, that.identifier());
     }
 
     @Override
