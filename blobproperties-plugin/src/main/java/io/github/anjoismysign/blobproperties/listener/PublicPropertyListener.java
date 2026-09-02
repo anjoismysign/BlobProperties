@@ -42,23 +42,12 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashSet;
-import java.util.Set;
-
 public class PublicPropertyListener extends ProprietorListener {
-    private final Set<Material> transparent;
     private final PropertyShardManager shardManager;
 
     public PublicPropertyListener(PropertiesManagerDirector director) {
         super(director);
         shardManager = director.getPropertyShardManager();
-        transparent = new HashSet<>();
-        transparent.add(Material.AIR);
-        transparent.add(Material.CAVE_AIR);
-        transparent.add(Material.VOID_AIR);
-        transparent.add(Material.WATER);
-        transparent.add(Material.LAVA);
-        transparent.add(Material.LIGHT);
 
         Bukkit.getPluginManager().registerEvents(this, getPlugin());
     }
@@ -196,7 +185,7 @@ public class PublicPropertyListener extends ProprietorListener {
             return;
         }
         if (action == Action.RIGHT_CLICK_BLOCK) {
-            final InternalProperty property = shardManager.isDoor(block);
+            final @Nullable InternalProperty property = shardManager.isDoor(block);
             if (property == null) {
                 handleDoor(player, block, true);
                 return;

@@ -14,6 +14,7 @@ import io.github.anjoismysign.blobproperties.entity.InternalProperty;
 import io.github.anjoismysign.blobproperties.entity.InternalPropertyType;
 import io.github.anjoismysign.blobproperties.entity.ProprietorProfile;
 import org.bukkit.Bukkit;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -23,7 +24,7 @@ import java.util.Map;
 
 public class BlobProperties
         extends BlobPlugin
-        implements BlobPropertiesAPI {
+        implements BlobPropertiesAPI, BukkitBlobPropertiesAPI {
 
     private final Map<PropertyMetaType, BukkitIdentityManager<InternalProperty>> propertyIdentityManagers = new HashMap<>();
     private PropertiesManagerDirector director;
@@ -100,4 +101,8 @@ public class BlobProperties
         return accountCruder.getAccount(player);
     }
 
+    @Override
+    public @Nullable InternalProperty getLinkedProperty(@NotNull Block door) {
+        return director.getPropertyShardManager().isDoor(door);
+    }
 }
