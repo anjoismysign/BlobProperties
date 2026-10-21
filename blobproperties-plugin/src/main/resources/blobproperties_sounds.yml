@@ -49,11 +49,6 @@ Property:
     Volume: 1.0
     Pitch: 1.25
     Audience: PLAYER
-  Not-Enough-Money:
-    Sound: block.note_block.bass
-    Volume: 1.0
-    Pitch: 1.25
-    Audience: PLAYER
 BlobProprietor:
   Invited:
     Sound: block.note_block.chime

@@ -1,7 +1,3 @@
-World:
-  Not-Found:
-    Title: '&c&lNOT FOUND'
-    Subtitle: '&7World not found'
 Door:
   Added:
     Title: '&f&lDONE!'
@@ -37,37 +33,12 @@ Property:
     Title: '&c&lDENIED'
     Subtitle: '&7You do not own this property'
     BlobSound: Property.Not-Owner
-  Not-Enough-Money:
-    Title: '&c&lOOPS!'
-    Subtitle: '&7Not enough money!'
-    BlobSound: Property.Not-Enough-Money
-Builder:
-  Price:
-    Title: '&f&lTYPE IN PRICE'
-    Subtitle: '&7It can include decimals'
-  Price-Timeout:
-    Title: '&c&lTIMEOUT'
-    Subtitle: '&7You took too long to type in a price'
-    BlobSound: Builder.Timeout
-  PropertyDisplayName:
-    Title: '&f&lDISPLAY-NAME'
-    Subtitle: '&7This will be used in "en_us" locale'
-  PropertyDisplayName-Timeout:
-    Title: '&c&lTIMEOUT'
-    Subtitle: '&7You took too long to type in a display name'
-    BlobSound: Builder.Timeout
 BlobProprietor:
   Not-Inside-Property:
     Chat: '&c&lERROR: &7You are not inside a property'
     BlobSound: System.Alert
   Not-Inside-Own-Property:
     Chat: '&c&lERROR: &7You are not inside your own property'
-    BlobSound: System.Alert
-  Not-Inside-Cache:
-    Chat: '&c&lERROR: &7You are not inside the cache (maybe not yet)'
-    BlobSound: System.Alert
-  Not-Inside-Cache-Others:
-    Chat: '&c&lERROR: &7%player% is not inside the cache (maybe not yet)'
     BlobSound: System.Alert
   Invited:
     Chat: '&a&lINVITED: &7%player% has been invited to your property'
