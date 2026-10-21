@@ -13,6 +13,7 @@ import io.github.anjoismysign.blobproperties.director.InternalPartyManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,6 +32,12 @@ public class InternalParty implements Party {
     private final ProprietorProfile owner;
     private final Set<UUID> allowed;
     private final Set<UUID> inside;
+    private @Nullable BukkitTask emptyDisbandTask;
+
+    /**
+     * How long a party waits for a guest to join after its last guest left.
+     */
+    private static final long EMPTY_DISBAND_TICKS = 20L * 30;
 
     private static InternalPartyManager partyManager() {
         return (InternalPartyManager) Objects.requireNonNull(BlobPropertiesAPI.getInstance()).getPartyManager();
@@ -78,6 +85,7 @@ public class InternalParty implements Party {
      *                  at the same location, inside or outside the property.
      */
     public void disband(boolean keepOwner) {
+        cancelEmptyDisband();
         forEachInsideProprietor(proprietor -> {
             if (keepOwner && proprietor.getAddress().equals(owner.getAddress())) {
                 return;
@@ -319,6 +327,7 @@ public class InternalParty implements Party {
             guest.setCurrentlyAttending(null);
             return false;
         }
+        cancelEmptyDisband();
         return true;
     }
 
@@ -353,9 +362,7 @@ public class InternalParty implements Party {
                 .replace("%player%", guestPlayer.getName())
                 .get()
                 .handle(allowed));
-        if (allowed.size() <= 1){
-            disband();
-        }
+        scheduleDisbandIfEmpty();
         return true;
     }
 
@@ -381,9 +388,53 @@ public class InternalParty implements Party {
                     .get()
                     .handle(allowed));
         }
-        if (allowed.size() <= 1) {
-            disband();
+        scheduleDisbandIfEmpty();
+    }
+
+    /**
+     * @return true if any online guest (not the owner) is attending this party
+     */
+    private boolean hasGuests() {
+        for (UUID uuid : allowed) {
+            if (uuid.equals(owner.getAddress())) {
+                continue;
+            }
+            @Nullable Player player = Bukkit.getPlayer(uuid);
+            if (player == null) {
+                continue;
+            }
+            @Nullable ProprietorProfile proprietor = BlobProperties.getInstance().getProprietor(player);
+            if (proprietor != null && proprietor.getCurrentlyAttending() == this) {
+                return true;
+            }
         }
+        return false;
+    }
+
+    /**
+     * If no guest is left, waits {@link #EMPTY_DISBAND_TICKS} for one to join
+     * before disbanding. The owner is never teleported by this.
+     */
+    private void scheduleDisbandIfEmpty() {
+        if (hasGuests()) {
+            return;
+        }
+        cancelEmptyDisband();
+        emptyDisbandTask = Bukkit.getScheduler().runTaskLater(BlobProperties.getInstance(), () -> {
+            emptyDisbandTask = null;
+            if (hasGuests()) {
+                return;
+            }
+            disband(true);
+        }, EMPTY_DISBAND_TICKS);
+    }
+
+    private void cancelEmptyDisband() {
+        if (emptyDisbandTask == null) {
+            return;
+        }
+        emptyDisbandTask.cancel();
+        emptyDisbandTask = null;
     }
 
     private void hideOwner() {
