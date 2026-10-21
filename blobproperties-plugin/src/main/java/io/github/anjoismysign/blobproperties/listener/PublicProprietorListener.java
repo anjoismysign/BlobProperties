@@ -107,12 +107,14 @@ public class PublicProprietorListener extends ProprietorListener {
 
     @EventHandler
     public void onChorusFruit(PlayerTeleportEvent event) {
-        if (event.getCause() != PlayerTeleportEvent.TeleportCause.CONSUMABLE_EFFECT)
+        if (event.getCause() != PlayerTeleportEvent.TeleportCause.CONSUMABLE_EFFECT) {
             return;
+        }
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
-        if (!inPublicProperty.contains(uuid))
+        if (!inPublicProperty.contains(uuid)) {
             return;
+        }
         event.setCancelled(true);
     }
 
