@@ -134,6 +134,16 @@ public enum BlobPropertiesCommand {
                 MESSAGE_API.getMessage("BlobProprietor.Not-Inside-Own-Property", player).handle(player);
                 return;
             }
+            if (guest.getAddress().equals(host.getAddress())) {
+                MESSAGE_API.getMessage("BlobProprietor.Cannot-Invite-Self", player).handle(player);
+                return;
+            }
+            if (party != null && party.equals(guest.getCurrentlyAttending())) {
+                MESSAGE_API.getMessage("BlobProprietor.Other-Already-Attending-Party", player)
+                        .modify(s -> s.replace("%player%", target.getName()))
+                        .handle(player);
+                return;
+            }
             if (party == null)
                 party = new InternalParty(host, currentlyAt);
             MESSAGE_API.getMessage("BlobProprietor.Invited", player)
@@ -179,6 +189,14 @@ public enum BlobPropertiesCommand {
                 return;
             }
             @Nullable InternalParty oldParty = guest.getCurrentlyAttending();
+            if (party.equals(oldParty)) {
+                // leaving and lodging again would unallow the guest and leave them stuck hidden
+                guest.removePendingInvite(host);
+                MESSAGE_API.getMessage("BlobProprietor.Already-Attending-Party", player)
+                        .modify(s -> s.replace("%player%", target.getName()))
+                        .handle(player);
+                return;
+            }
             if (oldParty != null) {
                 oldParty.stepOut(guest, false, false);
                 oldParty.unallow(guest);

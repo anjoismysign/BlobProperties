@@ -86,6 +86,15 @@ BlobProprietor:
   Not-Attending-Party:
     Chat: '&c&lERROR: &7You are not attending a party'
     BlobSound: System.Alert
+  Already-Attending-Party:
+    Chat: '&c&lERROR: &7You are already attending %player%''s party'
+    BlobSound: System.Alert
+  Other-Already-Attending-Party:
+    Chat: '&c&lERROR: &7%player% is already attending your party'
+    BlobSound: System.Alert
+  Cannot-Invite-Self:
+    Chat: '&c&lERROR: &7You cannot invite yourself'
+    BlobSound: System.Alert
   Not-Party-Leader:
     Chat: '&c&lERROR: &7You are not the party leader'
     BlobSound: System.Alert
