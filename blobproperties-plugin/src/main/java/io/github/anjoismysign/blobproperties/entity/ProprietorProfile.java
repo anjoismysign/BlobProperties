@@ -230,10 +230,10 @@ public class ProprietorProfile implements Crudable, SerializableProprietor, Play
         if (!property.placeInside(player, location)){
             return false;
         }
-        if (!proprietorStepInEvent.isAssistingToParty()) {
+        // if not let into the party, must stay hidden from every other session
+        boolean joinedParty = proprietorStepInEvent.isAssistingToParty() && party.stepIn(this);
+        if (!joinedParty) {
             setVanished(true);
-        } else {
-            party.stepIn(this);
         }
         setCurrentlyAt(property);
         PublicProprietorListener.addToPublicTracking(player);
