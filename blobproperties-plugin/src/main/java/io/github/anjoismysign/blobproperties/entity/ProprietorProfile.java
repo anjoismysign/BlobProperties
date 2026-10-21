@@ -124,12 +124,21 @@ public class ProprietorProfile implements Crudable, SerializableProprietor, Play
 
     /**
      * Updates the current property.
+     * Also keeps {@link PublicProprietorListener}'s tracking in sync.
      *
      * @param currentlyAt The current property. null if not inside a property.
      */
     public void setCurrentlyAt(@Nullable Property currentlyAt) {
         @Nullable PropertyReference reference = PropertyReference.ofProperty(currentlyAt);
         this.currentlyAt = reference;
+        @Nullable Player player = getPlayer();
+        if (player != null) {
+            if (reference == null) {
+                PublicProprietorListener.removeFromPublicTracking(player);
+            } else {
+                PublicProprietorListener.addToPublicTracking(player);
+            }
+        }
         if (reference != null) {
             InternalProperty property = reference.toInternalProperty();
             if (property == null)
@@ -237,7 +246,6 @@ public class ProprietorProfile implements Crudable, SerializableProprietor, Play
             setVanished(true);
         }
         setCurrentlyAt(property);
-        PublicProprietorListener.addToPublicTracking(player);
         return true;
     }
 
@@ -265,7 +273,6 @@ public class ProprietorProfile implements Crudable, SerializableProprietor, Play
             party.stepOut(this, false, false);
         }
         setCurrentlyAt(null);
-        PublicProprietorListener.removeFromPublicTracking(player);
         return true;
     }
 }
