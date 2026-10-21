@@ -91,14 +91,16 @@ public class ProprietorPlaceholderExpansion {
                     return getSnippet("BlobProperties.None-Party", player)
                             .get();
                 boolean isOwner = currentlyAttending.getOwner().getAddress().equals(proprietor.getAddress());
+                // owner may be offline, so don't go through Player#getName
+                String ownerName = ((InternalParty) currentlyAttending).getOwnerName();
                 return isOwner ? getSnippet("BlobProperties.My-Party", player)
                         .modder()
-                        .replace("%player%", proprietor.getCurrentlyAttending().getOwner().getPlayer().getName())
+                        .replace("%player%", ownerName)
                         .get()
                         .get() :
                         getSnippet("BlobProperties.Other-Party", player)
                                 .modder()
-                                .replace("%player%", proprietor.getCurrentlyAttending().getOwner().getPlayer().getName())
+                                .replace("%player%", ownerName)
                                 .get()
                                 .get();
             });

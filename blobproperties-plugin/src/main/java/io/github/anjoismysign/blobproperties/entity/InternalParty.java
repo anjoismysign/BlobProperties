@@ -125,6 +125,8 @@ public class InternalParty implements Party {
             oldParticipant.setVanished(false);
         }
         if (leaveSession) {
+            // skip messages and visibility updates, but never keep an offline uuid inside
+            inside.remove(oldPlayer.getUniqueId());
             return;
         }
         removeParticipant(oldPlayer);
@@ -200,7 +202,7 @@ public class InternalParty implements Party {
 
     @Override
     public @NotNull Set<Player> getPlayersInside() {
-        return inside.stream().map(Bukkit::getPlayer).collect(Collectors.toSet());
+        return inside.stream().map(Bukkit::getPlayer).filter(Objects::nonNull).collect(Collectors.toSet());
     }
 
     @Override

@@ -14,11 +14,13 @@ import io.github.anjoismysign.blobproperties.api.ProprietorContainer;
 import io.github.anjoismysign.blobproperties.api.SerializableProprietor;
 import io.github.anjoismysign.blobproperties.director.PropertiesManagerDirector;
 import io.github.anjoismysign.blobproperties.director.PropertyShardManager;
+import io.github.anjoismysign.blobproperties.entity.InternalParty;
 import io.github.anjoismysign.blobproperties.entity.InternalProperty;
 import io.github.anjoismysign.blobproperties.entity.InternalPropertyType;
 import io.github.anjoismysign.blobproperties.entity.ItemType;
 import io.github.anjoismysign.blobproperties.entity.PropertiesNamespacedKeys;
 import io.github.anjoismysign.blobproperties.entity.PropertyContainer;
+import io.github.anjoismysign.blobproperties.entity.ProprietorProfile;
 import io.github.anjoismysign.blobproperties.event.DoorInventoryEvent;
 import io.github.anjoismysign.blobproperties.library.InventoryUtil;
 import org.bukkit.Bukkit;
@@ -33,9 +35,11 @@ import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.type.Door;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -256,6 +260,27 @@ public class PublicPropertyListener extends ProprietorListener {
                 }
                 player.setVelocity(velocity);
             }
+        }
+    }
+
+    /**
+     * Removes the quitting player from their party, disbanding it if they host it.
+     * Runs at LOWEST so the proprietor account is still loaded.
+     */
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onQuit(PlayerQuitEvent event) {
+        ProprietorProfile proprietor = BlobProperties.getInstance().getProprietor(event.getPlayer());
+        if (proprietor == null) {
+            return;
+        }
+        @Nullable InternalParty party = proprietor.getCurrentlyAttending();
+        if (party == null) {
+            return;
+        }
+        if (party.getOwner().getAddress().equals(proprietor.getAddress())) {
+            party.disband();
+        } else {
+            party.depart(proprietor, true);
         }
     }
 
