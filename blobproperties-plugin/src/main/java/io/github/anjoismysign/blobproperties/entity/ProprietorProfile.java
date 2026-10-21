@@ -19,6 +19,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -36,6 +38,7 @@ public class ProprietorProfile implements Crudable, SerializableProprietor, Play
     private @NotNull List<String> serialContainerOwner;
     private transient @NotNull ContainerOwner containerOwner;
     private transient @NotNull Set<String> pendingInvites;
+    private transient @NotNull Map<String, BukkitTask> inviteExpirations;
     private transient @Nullable ProprietorContainer currentContainer;
     private @Nullable PropertyReference currentlyAt;
     private @Nullable PropertyReference lastKnownAt;
@@ -77,6 +80,7 @@ public class ProprietorProfile implements Crudable, SerializableProprietor, Play
     @Override
     public void onPostLoad() {
         this.pendingInvites = new HashSet<>();
+        this.inviteExpirations = new HashMap<>();
         this.containerOwner = ContainerOwner.fromSerialized(serialContainerOwner);
         this.plugin = BlobProperties.getInstance();
     }
@@ -166,6 +170,10 @@ public class ProprietorProfile implements Crudable, SerializableProprietor, Play
         Player player = host.getPlayer();
         if (player == null || !player.isOnline()) return;
         pendingInvites.remove(player.getName());
+        @Nullable BukkitTask expiration = inviteExpirations.remove(player.getName());
+        if (expiration != null) {
+            expiration.cancel();
+        }
     }
 
     @NotNull
@@ -217,10 +225,24 @@ public class ProprietorProfile implements Crudable, SerializableProprietor, Play
     public void addPendingInvite(@NotNull Proprietor host, @NotNull Party party) {
         Player player = host.getPlayer();
         if (player == null || !player.isOnline()) return;
-        ((InternalParty) party).allow(this);
-        var pendingInvites = getPendingInvites();
-        pendingInvites.add(player.getName());
-        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> pendingInvites.remove(player.getName()), 20 * plugin.getManagerDirector().getConfigManager().getPendingInvitesExpiration());
+        String hostName = player.getName();
+        InternalParty internalParty = (InternalParty) party;
+        internalParty.allow(this);
+        pendingInvites.add(hostName);
+        // a new invite from the same host restarts the expiration
+        @Nullable BukkitTask previous = inviteExpirations.remove(hostName);
+        if (previous != null) {
+            previous.cancel();
+        }
+        long delay = 20L * plugin.getManagerDirector().getConfigManager().getPendingInvitesExpiration();
+        BukkitTask expiration = Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            inviteExpirations.remove(hostName);
+            // revoke access only if the invite was never used
+            if (pendingInvites.remove(hostName) && currentlyAttending != internalParty) {
+                internalParty.unallow(this);
+            }
+        }, delay);
+        inviteExpirations.put(hostName, expiration);
     }
 
     public boolean stepIn(@NotNull Property to, final @Nullable Location location) {
