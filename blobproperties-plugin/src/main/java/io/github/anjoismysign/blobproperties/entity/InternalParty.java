@@ -368,8 +368,8 @@ public class InternalParty implements Party {
 
     /**
      * Removes the guest from the party without teleporting them or changing their currentlyAt.
-     * Used when the guest switches profile: the profile provider already saved their
-     * location and moved them, and the new profile's session join sets their visibility.
+     * Used when the guest's profile is being saved (quit or profile switch): the player
+     * can't be teleported anymore, and the next session join sets their visibility.
      *
      * @param guest the guest
      */

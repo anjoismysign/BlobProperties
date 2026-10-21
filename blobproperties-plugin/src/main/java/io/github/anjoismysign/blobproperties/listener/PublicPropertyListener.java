@@ -48,6 +48,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -272,7 +273,8 @@ public class PublicPropertyListener extends ProprietorListener {
      * Removes the quitting player from their party, disbanding it if they host it.
      * Runs at LOWEST so the proprietor profile is still loaded, since the account
      * cruder drops it on this same event. It also runs before the profile provider
-     * saves the player's location.
+     * saves the player's location, but a disconnecting player can't be teleported,
+     * so guests are placed outside the next time their profile loads.
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onQuit(ProfileManagementQuitEvent event) {
@@ -288,7 +290,7 @@ public class PublicPropertyListener extends ProprietorListener {
             // host is restored where they disconnected, guests are kicked outside
             party.disband(true);
         } else {
-            party.depart(proprietor, true);
+            kickSavedGuest(party, proprietor);
         }
     }
 
@@ -322,12 +324,20 @@ public class PublicPropertyListener extends ProprietorListener {
         if (party.getOwner().getAddress().equals(previous.getAddress())) {
             party.disband(true);
         } else {
-            boolean insidePartyProperty = party.getProperty().equals(previous.getCurrentlyAt());
-            party.detach(previous);
-            if (insidePartyProperty) {
-                // kicked from the property too, applied when the previous profile loads again
-                previous.ejectOnNextLoad();
-            }
+            kickSavedGuest(party, previous);
+        }
+    }
+
+    /**
+     * Kicks a guest whose profile is being saved (quit or profile switch) from the party,
+     * and from the property if they're inside it. The player can't be teleported anymore,
+     * so they're placed outside the next time this profile loads.
+     */
+    private void kickSavedGuest(@NotNull InternalParty party, @NotNull ProprietorProfile guest) {
+        boolean insidePartyProperty = party.getProperty().equals(guest.getCurrentlyAt());
+        party.detach(guest);
+        if (insidePartyProperty) {
+            guest.ejectOnNextLoad();
         }
     }
 
