@@ -28,7 +28,7 @@ public class ConfigManager extends PropertiesManager {
         main.saveConfig();
         FileConfiguration config = main.getConfig();
         this.pendingInvitesExpiration = config.getLong("Options.PendingInvitesExpiration");
-        String format = config.getString("Options.numberFormat");
+        String format = config.getString("Options.numberFormat", "GENERIC");
         switch (format) {
             case "VAULT":
                 this.formatter = new Vault();
@@ -44,7 +44,7 @@ public class ConfigManager extends PropertiesManager {
                 break;
             default:
                 Bukkit.getLogger().info("[BlobProperties] Invalid number format in config.yml. Using default (GENERIC).");
-                Bukkit.getLogger().info("[BlobProperties] Valid formats: INTEGERS, BLOBTYCOON, GENERIC");
+                Bukkit.getLogger().info("[BlobProperties] Valid formats: VAULT, INTEGERS, BLOBTYCOON, GENERIC");
                 this.formatter = new Generic();
                 break;
         }
