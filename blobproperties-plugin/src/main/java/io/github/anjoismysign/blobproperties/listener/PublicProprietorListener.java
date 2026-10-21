@@ -52,7 +52,7 @@ public class PublicProprietorListener extends ProprietorListener {
     private PublicProprietorListener(PropertiesManagerDirector director) {
         super(director);
         inPublicProperty = new HashSet<>();
-//        Bukkit.getPluginManager().registerEvents(this, getPlugin());
+        Bukkit.getPluginManager().registerEvents(this, getPlugin());
     }
 
     @EventHandler
@@ -71,10 +71,19 @@ public class PublicProprietorListener extends ProprietorListener {
         if (player == null){
             return;
         }
-        if (proprietor.getCurrentlyAt() != null) {
+        boolean joinedInside = proprietor.getCurrentlyAt() != null;
+        if (joinedInside) {
             addToPublicTracking(player);
         }
         Bukkit.getOnlinePlayers().forEach(onlinePlayer -> {
+            if (onlinePlayer.equals(player)) {
+                return;
+            }
+            // others only see the joined player if they are outside a property
+            if (!joinedInside) {
+                onlinePlayer.showPlayer(getPlugin(), player);
+            }
+            // the joined player only sees others that are outside a property
             Proprietor onlineProprietor = BlobProperties.getInstance().getProprietor(onlinePlayer);
             if (onlineProprietor == null) {
                 return;
@@ -152,21 +161,5 @@ public class PublicProprietorListener extends ProprietorListener {
         event.setKeepLevel(true);
         event.getDrops().clear();
         event.setDroppedExp(0);
-    }
-
-    @EventHandler
-    public void onArrowPickup(PlayerPickupArrowEvent event) {
-        if (!inPublicProperty.contains(event.getPlayer().getUniqueId()))
-            return;
-        event.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onItemPickup(EntityPickupItemEvent event) {
-        if (event.getEntity() instanceof Player player) {
-            if (!inPublicProperty.contains(player.getUniqueId()))
-                return;
-            event.setCancelled(true);
-        }
     }
 }
