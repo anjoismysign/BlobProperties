@@ -41,6 +41,10 @@ public class ProprietorProfile implements Crudable, SerializableProprietor, Play
     private transient @Nullable ProprietorContainer currentContainer;
     private @Nullable PropertyReference currentlyAt;
     private @Nullable PropertyReference lastKnownAt;
+    /**
+     * Property this profile has to be placed outside of the next time it loads.
+     */
+    private @Nullable PropertyReference pendingEjection;
     private transient @Nullable InternalParty currentlyAttending;
 
     private transient PlayerDecorator playerDecorator;
@@ -66,6 +70,7 @@ public class ProprietorProfile implements Crudable, SerializableProprietor, Play
             if (player == null){
                 return;
             }
+            applyPendingEjection(player);
             ProprietorJoinSessionEvent event = new ProprietorJoinSessionEvent(this);
             Bukkit.getPluginManager().callEvent(event);
         };
@@ -74,6 +79,35 @@ public class ProprietorProfile implements Crudable, SerializableProprietor, Play
         } else {
             Bukkit.getScheduler().runTask(plugin, syncRunnable);
         }
+    }
+
+    /**
+     * Steps this profile out of its current property and marks it to be placed outside
+     * of it the next time it loads.
+     * Used when a guest switches profile while inside: the profile provider already saved
+     * this profile's location inside and moved the player to the new profile, so the
+     * player can't be teleported now.
+     */
+    public void ejectOnNextLoad() {
+        if (currentlyAt == null) {
+            return;
+        }
+        pendingEjection = currentlyAt;
+        currentlyAt = null;
+    }
+
+    private void applyPendingEjection(@NotNull Player player) {
+        @Nullable PropertyReference ejection = pendingEjection;
+        if (ejection == null) {
+            return;
+        }
+        pendingEjection = null;
+        @Nullable InternalProperty property = ejection.toInternalProperty();
+        if (property == null) {
+            plugin.getLogger().warning("Couldn't place " + player.getName() + " outside '" + ejection.identifier() + "' since it no longer exists");
+            return;
+        }
+        property.placeOutside(player, null);
     }
 
     @Override

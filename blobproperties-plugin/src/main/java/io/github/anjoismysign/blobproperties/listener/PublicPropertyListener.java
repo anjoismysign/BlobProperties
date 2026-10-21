@@ -310,7 +310,12 @@ public class PublicPropertyListener extends ProprietorListener {
         if (party.getOwner().getAddress().equals(previous.getAddress())) {
             party.disband(true);
         } else {
+            boolean insidePartyProperty = party.getProperty().equals(previous.getCurrentlyAt());
             party.detach(previous);
+            if (insidePartyProperty) {
+                // kicked from the property too, applied when the previous profile loads again
+                previous.ejectOnNextLoad();
+            }
         }
     }
 
