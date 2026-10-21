@@ -11,6 +11,8 @@ import io.github.anjoismysign.blobproperties.numberformat.Vault;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import java.util.Optional;
+
 public class ConfigManager extends PropertiesManager {
 
     private final Formatter formatter;
@@ -50,6 +52,10 @@ public class ConfigManager extends PropertiesManager {
 
     public String format(double amount) {
         return formatter.format(amount);
+    }
+
+    public String format(double amount, Optional<String> currency) {
+        return formatter.format(amount, currency);
     }
 
     public long getPendingInvitesExpiration() {

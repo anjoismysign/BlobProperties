@@ -9,6 +9,7 @@ import io.github.anjoismysign.bloblib.inventory.BlobInventoryTracker;
 import io.github.anjoismysign.bloblib.inventory.InventoryDataRegistry;
 import io.github.anjoismysign.bloblib.message.BlobSound;
 import io.github.anjoismysign.bloblib.middleman.itemstack.ItemStackModder;
+import io.github.anjoismysign.bloblib.vault.multieconomy.ElasticEconomy;
 import io.github.anjoismysign.blobproperties.api.SerializableProprietor;
 import io.github.anjoismysign.blobproperties.director.PropertiesManagerDirector;
 import io.github.anjoismysign.blobproperties.entity.InternalProperty;
@@ -23,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 public class PublicPropertyHome extends PropertiesInventoryHandler {
     private final String registryKey;
@@ -91,10 +93,16 @@ public class PublicPropertyHome extends PropertiesInventoryHandler {
                         if (!proprietor.ownsProperty(property)) {
                             BlobLibMessageAPI.getInstance().getMessage("Property.Not-Owner", player).handle(player);
                         } else {
+                            ElasticEconomy elasticEconomy = BlobLibEconomyAPI.getInstance().getElasticEconomy();
+                            if (elasticEconomy.isAbsent()) {
+                                getPlugin().getLogger().severe("No economy plugin installed, '" + property.identifier() + "' can't be sold");
+                                return;
+                            }
+                            Optional<String> currency = InternalProperty.economyCurrency(property.getCurrency());
                             proprietor.removeProperty(property);
-                            BlobLibEconomyAPI.getInstance().getElasticEconomy().getDefault().depositPlayer(player, price);
+                            elasticEconomy.map(currency).depositPlayer(player, price);
                             BlobLibMessageAPI.getInstance().getMessage("Property.Sold", player).modify(s -> s.replace("%price%",
-                                    director.getConfigManager().format(price))).handle(player);
+                                    director.getConfigManager().format(price, currency))).handle(player);
                         }
                     },
                     property -> {

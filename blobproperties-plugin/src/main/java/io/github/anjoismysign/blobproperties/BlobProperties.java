@@ -87,7 +87,7 @@ public class BlobProperties
 
     @Override
     public @NotNull String format(@Nullable String currency, double amount) {
-        return director.getConfigManager().format(amount);
+        return director.getConfigManager().format(amount, InternalProperty.economyCurrency(currency));
     }
 
     @NotNull

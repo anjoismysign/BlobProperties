@@ -26,11 +26,35 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 public interface InternalProperty extends Property {
 
     static final BlobPropertiesAPI API = BlobPropertiesAPI.getInstance();
+
+    /**
+     * Converts a currency name into the argument expected by {@code ElasticEconomy#map}.
+     * Blank or "default" (the value new properties are created with) means the default currency.
+     *
+     * @param currency the currency name
+     * @return the currency to look up, empty for the default currency
+     */
+    @NotNull
+    static Optional<String> economyCurrency(@Nullable String currency) {
+        if (currency == null || currency.isBlank() || currency.equalsIgnoreCase("default")) {
+            return Optional.empty();
+        }
+        return Optional.of(currency);
+    }
+
+    /**
+     * @return this property's currency, as expected by {@code ElasticEconomy#map}
+     */
+    @NotNull
+    default Optional<String> economyCurrency() {
+        return economyCurrency(getCurrency());
+    }
 
     Set<BlockVector> getDoors();
 
