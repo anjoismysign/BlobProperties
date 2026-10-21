@@ -34,6 +34,13 @@ public class PublicProprietorListener extends ProprietorListener {
         return instance;
     }
 
+    /**
+     * Drops the instance so a re-enable doesn't keep using the old one.
+     */
+    public static void unload() {
+        instance = null;
+    }
+
     public static void addToPublicTracking(Player player) {
         instance.getManagerDirector().getListenerManager().getPublicProprietorListener()
                 .inPublicProperty.add(player.getUniqueId());

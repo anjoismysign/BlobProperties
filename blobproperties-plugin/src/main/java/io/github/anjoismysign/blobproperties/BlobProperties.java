@@ -9,10 +9,13 @@ import io.github.anjoismysign.blobproperties.api.PartyManager;
 import io.github.anjoismysign.blobproperties.api.PropertyManager;
 import io.github.anjoismysign.blobproperties.api.PropertyMetaType;
 import io.github.anjoismysign.blobproperties.command.BlobPropertiesCommand;
+import io.github.anjoismysign.blobproperties.director.InternalPartyManager;
 import io.github.anjoismysign.blobproperties.director.PropertiesManagerDirector;
+import io.github.anjoismysign.blobproperties.director.PropertyShardManager;
 import io.github.anjoismysign.blobproperties.entity.InternalProperty;
 import io.github.anjoismysign.blobproperties.entity.InternalPropertyType;
 import io.github.anjoismysign.blobproperties.entity.ProprietorProfile;
+import io.github.anjoismysign.blobproperties.listener.PublicProprietorListener;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -66,6 +69,10 @@ public class BlobProperties
         if (accountCruder != null) {
             accountCruder.shutdown();
         }
+        InternalPartyManager.unload();
+        PublicProprietorListener.unload();
+        BlobPropertiesInternalAPI.unload();
+        PropertyShardManager.unload();
     }
 
     @Override

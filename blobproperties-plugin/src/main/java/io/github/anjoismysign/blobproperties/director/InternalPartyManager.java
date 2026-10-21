@@ -29,6 +29,13 @@ public class InternalPartyManager
         return getInstance(null);
     }
 
+    /**
+     * Drops the instance so a re-enable doesn't keep using the old one.
+     */
+    public static void unload() {
+        instance = null;
+    }
+
     private InternalPartyManager(PropertiesManagerDirector managerDirector) {
         super(managerDirector);
         parties = new HashMap<>();

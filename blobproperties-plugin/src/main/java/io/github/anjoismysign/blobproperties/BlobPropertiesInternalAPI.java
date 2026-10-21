@@ -25,6 +25,13 @@ public class BlobPropertiesInternalAPI {
         return getInstance(null);
     }
 
+    /**
+     * Drops the instance so a re-enable doesn't keep using the old one.
+     */
+    public static void unload() {
+        instance = null;
+    }
+
     private BlobPropertiesInternalAPI(PropertiesManagerDirector director) {
         this.director = director;
     }
