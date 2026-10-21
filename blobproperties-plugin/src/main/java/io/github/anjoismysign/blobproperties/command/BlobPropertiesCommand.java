@@ -215,16 +215,23 @@ public enum BlobPropertiesCommand {
                 MESSAGE_API.getMessage("BlobProprietor.Not-Attending-Party", player).handle(player);
                 return;
             }
-            @Nullable Party attending = guest.getCurrentlyAttending();
-            @Nullable Property at = guest.getCurrentlyAt();
-            if (attending != null
-                    && at != null
-                    && attending.equals(party)
-                    && at.equals(party.getProperty())) {
-                party.stepOut(guest, true, false);
+            if (!party.getOwner().getAddress().equals(host.getAddress())) {
+                MESSAGE_API.getMessage("BlobProprietor.Not-Party-Leader", player).handle(player);
+                return;
+            }
+            if (guest.getAddress().equals(host.getAddress())) {
+                MESSAGE_API.getMessage("BlobProprietor.Party-Leader-Cannot-Leave", player).handle(player);
+                return;
             }
             guest.removePendingInvite(host);
-            party.unallow(guest);
+            @Nullable Party attending = guest.getCurrentlyAttending();
+            if (party.equals(attending)) {
+                // takes the guest out of the property and clears their party state
+                party.depart(guest, false);
+            } else {
+                // invited but never visited
+                party.unallow(guest);
+            }
         }));
 
         Command adminCommand = COMMAND.child("admin");
