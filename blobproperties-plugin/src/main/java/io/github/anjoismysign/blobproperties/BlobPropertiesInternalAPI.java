@@ -9,30 +9,13 @@ import org.bukkit.block.data.Openable;
 import org.bukkit.entity.Player;
 
 public class BlobPropertiesInternalAPI {
-    private static BlobPropertiesInternalAPI instance;
     private final PropertiesManagerDirector director;
 
-    public static BlobPropertiesInternalAPI getInstance(PropertiesManagerDirector director) {
-        if (instance == null) {
-            if (director == null)
-                throw new NullPointerException("injected dependency is null");
-            BlobPropertiesInternalAPI.instance = new BlobPropertiesInternalAPI(director);
-        }
-        return instance;
-    }
-
     public static BlobPropertiesInternalAPI getInstance() {
-        return getInstance(null);
+        return BlobProperties.getInstance().getApi();
     }
 
-    /**
-     * Drops the instance so a re-enable doesn't keep using the old one.
-     */
-    public static void unload() {
-        instance = null;
-    }
-
-    private BlobPropertiesInternalAPI(PropertiesManagerDirector director) {
+    public BlobPropertiesInternalAPI(PropertiesManagerDirector director) {
         this.director = director;
     }
 

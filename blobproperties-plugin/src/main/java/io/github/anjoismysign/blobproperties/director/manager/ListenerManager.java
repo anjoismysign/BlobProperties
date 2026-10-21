@@ -16,7 +16,7 @@ public class ListenerManager extends PropertiesManager {
     public ListenerManager(PropertiesManagerDirector director) {
         super(director);
         publicPropertyListener = new PublicPropertyListener(director);
-        publicProprietorListener = PublicProprietorListener.getInstance(director);
+        publicProprietorListener = new PublicProprietorListener(director);
         publicPropertyBuy = new PublicPropertyBuy(director);
         publicPropertyHome = new PublicPropertyHome(director);
     }

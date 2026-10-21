@@ -24,25 +24,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class PublicProprietorListener extends ProprietorListener {
-    private static PublicProprietorListener instance;
 
-    public static PublicProprietorListener getInstance(PropertiesManagerDirector director) {
-        if (instance == null) {
-            if (director == null)
-                throw new NullPointerException("injected dependency is null");
-            PublicProprietorListener.instance = new PublicProprietorListener(director);
-        }
-        return instance;
-    }
-
-    /**
-     * Drops the instance so a re-enable doesn't keep using the old one.
-     */
-    public static void unload() {
-        instance = null;
-    }
-
-    private PublicProprietorListener(PropertiesManagerDirector director) {
+    public PublicProprietorListener(PropertiesManagerDirector director) {
         super(director);
         Bukkit.getPluginManager().registerEvents(this, getPlugin());
     }

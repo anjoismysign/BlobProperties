@@ -3,7 +3,6 @@ package io.github.anjoismysign.blobproperties.entity;
 import io.github.anjoismysign.bloblib.manager.asset.BukkitIdentityManager;
 import io.github.anjoismysign.blobproperties.BlobProperties;
 import io.github.anjoismysign.blobproperties.api.PropertyMeta;
-import io.github.anjoismysign.blobproperties.director.PropertyShardManager;
 import io.github.anjoismysign.holoworld.asset.IdentityGeneration;
 import io.github.anjoismysign.holoworld.asset.IdentityGenerator;
 import org.bukkit.util.BlockVector;
@@ -25,7 +24,7 @@ public class PublicProperty extends SimpleInternalProperty {
                           @NotNull Map<BlockVector, Container> containers,
                           boolean useDefaultLore) {
         super(identifier, price, currency, doors, containers, useDefaultLore);
-        PropertyShardManager.getInstance().addProperty(this);
+        BlobProperties.getInstance().getPropertyManager().addProperty(this);
     }
 
     @Override

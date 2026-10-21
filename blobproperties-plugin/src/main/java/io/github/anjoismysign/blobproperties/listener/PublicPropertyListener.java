@@ -50,12 +50,14 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 public class PublicPropertyListener extends ProprietorListener {
     private final PropertyShardManager shardManager;
 
     public PublicPropertyListener(PropertiesManagerDirector director) {
         super(director);
-        shardManager = director.getPropertyShardManager();
+        shardManager = getPlugin().getPropertyManager();
 
         Bukkit.getPluginManager().registerEvents(this, getPlugin());
     }
@@ -329,17 +331,23 @@ public class PublicPropertyListener extends ProprietorListener {
         }
     }
 
+    @Nullable
     private PropertyContainer holdsContainerManager(Player player) {
-        ItemStack item = player.getInventory().getItemInMainHand();
-        ItemMeta meta = item.getItemMeta();
-        if (meta == null) return null;
+        ItemStack stack = player.getInventory().getItemInMainHand();
+        ItemMeta meta = stack.getItemMeta();
+        if (meta == null){
+            return null;
+        }
         PersistentDataContainer data = meta.getPersistentDataContainer();
         if (!data.has(PropertiesNamespacedKeys.ITEM_TYPE.getKey(),
-                PersistentDataType.STRING)) return null;
-        ItemType itemType = ItemType.valueOf(data.get(PropertiesNamespacedKeys.ITEM_TYPE.getKey(), PersistentDataType.STRING));
-        if (itemType != ItemType.PUBLIC_PROPERTY_CONTAINER_MANAGER)
+                PersistentDataType.STRING)){
             return null;
-        return PropertyContainer.vinyl(data.get(PropertiesNamespacedKeys.OBJECT_META.getKey(), PersistentDataType.STRING), getManagerDirector());
+        }
+        ItemType itemType = ItemType.valueOf(data.get(PropertiesNamespacedKeys.ITEM_TYPE.getKey(), PersistentDataType.STRING));
+        if (itemType != ItemType.PUBLIC_PROPERTY_CONTAINER_MANAGER) {
+            return null;
+        }
+        return PropertyContainer.vinyl(Objects.requireNonNull(data.get(PropertiesNamespacedKeys.OBJECT_META.getKey(), PersistentDataType.STRING), "mp3 cannot be null!"));
     }
 
     private boolean handleDoor(Player player, Block block, boolean add) {

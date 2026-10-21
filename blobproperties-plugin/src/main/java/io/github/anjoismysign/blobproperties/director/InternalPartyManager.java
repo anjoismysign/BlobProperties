@@ -13,30 +13,9 @@ import java.util.UUID;
 public class InternalPartyManager
         extends PropertiesManager
         implements PartyManager {
-    private static InternalPartyManager instance;
     private final Map<UUID, InternalParty> parties;
 
-    public static InternalPartyManager getInstance(PropertiesManagerDirector director) {
-        if (instance == null) {
-            if (director == null)
-                throw new NullPointerException("injected dependency is null");
-            instance = new InternalPartyManager(director);
-        }
-        return instance;
-    }
-
-    public static InternalPartyManager getInstance() {
-        return getInstance(null);
-    }
-
-    /**
-     * Drops the instance so a re-enable doesn't keep using the old one.
-     */
-    public static void unload() {
-        instance = null;
-    }
-
-    private InternalPartyManager(PropertiesManagerDirector managerDirector) {
+    public InternalPartyManager(PropertiesManagerDirector managerDirector) {
         super(managerDirector);
         parties = new HashMap<>();
     }

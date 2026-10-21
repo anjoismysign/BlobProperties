@@ -6,16 +6,13 @@ import io.github.anjoismysign.bloblib.manager.asset.BukkitIdentityManager;
 import io.github.anjoismysign.bloblib.manager.cruder.ChunkedAccountCruder;
 import io.github.anjoismysign.blobproperties.api.BlobPropertiesAPI;
 import io.github.anjoismysign.blobproperties.api.PartyManager;
-import io.github.anjoismysign.blobproperties.api.PropertyManager;
 import io.github.anjoismysign.blobproperties.api.PropertyMetaType;
 import io.github.anjoismysign.blobproperties.command.BlobPropertiesCommand;
-import io.github.anjoismysign.blobproperties.director.InternalPartyManager;
 import io.github.anjoismysign.blobproperties.director.PropertiesManagerDirector;
 import io.github.anjoismysign.blobproperties.director.PropertyShardManager;
 import io.github.anjoismysign.blobproperties.entity.InternalProperty;
 import io.github.anjoismysign.blobproperties.entity.InternalPropertyType;
 import io.github.anjoismysign.blobproperties.entity.ProprietorProfile;
-import io.github.anjoismysign.blobproperties.listener.PublicProprietorListener;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -34,6 +31,8 @@ public class BlobProperties
     private BlobPropertiesInternalAPI api;
 
     private ChunkedAccountCruder<ProprietorProfile> accountCruder;
+
+    private final PropertyShardManager shardManager = new PropertyShardManager();
 
     private static BlobProperties INSTANCE;
 
@@ -56,7 +55,7 @@ public class BlobProperties
                             type.pascalCase(),
                             true));
         }
-        this.api = BlobPropertiesInternalAPI.getInstance(director);
+        this.api = new BlobPropertiesInternalAPI(director);
         Bukkit.getScheduler().runTask(this, ()->{
            accountCruder = new ChunkedAccountCruder<>(this, ProprietorProfile.class);
         });
@@ -69,10 +68,6 @@ public class BlobProperties
         if (accountCruder != null) {
             accountCruder.shutdown();
         }
-        InternalPartyManager.unload();
-        PublicProprietorListener.unload();
-        BlobPropertiesInternalAPI.unload();
-        PropertyShardManager.unload();
     }
 
     @Override
@@ -91,8 +86,8 @@ public class BlobProperties
     }
 
     @Override
-    public @NotNull PropertyManager getPropertyManager() {
-        return director.getPropertyShardManager();
+    public @NotNull PropertyShardManager getPropertyManager() {
+        return shardManager;
     }
 
     @Override
@@ -132,6 +127,6 @@ public class BlobProperties
 
     @Override
     public @Nullable InternalProperty getLinkedProperty(@NotNull Block door) {
-        return director.getPropertyShardManager().isDoor(door);
+        return getPropertyManager().isDoor(door);
     }
 }

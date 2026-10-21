@@ -2,6 +2,7 @@ package io.github.anjoismysign.blobproperties.entity;
 
 import io.github.anjoismysign.bloblib.domain.PlayerDecorator;
 import io.github.anjoismysign.bloblib.domain.PlayerDecoratorAware;
+import io.github.anjoismysign.bloblib.translatable.TranslatablePositionable;
 import io.github.anjoismysign.blobproperties.BlobProperties;
 import io.github.anjoismysign.blobproperties.api.Party;
 import io.github.anjoismysign.blobproperties.api.Property;
@@ -104,7 +105,12 @@ public class ProprietorProfile implements Crudable, SerializableProprietor, Play
         pendingEjection = null;
         @Nullable InternalProperty property = ejection.toInternalProperty();
         if (property == null) {
-            plugin.getLogger().warning("Couldn't place " + player.getName() + " outside '" + ejection.identifier() + "' since it no longer exists");
+            @Nullable TranslatablePositionable positionable = TranslatablePositionable.by(plugin.getManagerDirector().getConfigManager().getOutsideFallback());
+            if (positionable == null) {
+                plugin.getLogger().severe("Couldn't place " + player.getName() + " outside '" + ejection.identifier() + "' since it no longer exists, and config.yml 'Options.outsideFallback' doesn't point to a TranslatablePositionable");
+                return;
+            }
+            player.teleport(positionable.get().toLocation());
             return;
         }
         property.placeOutside(player, null);

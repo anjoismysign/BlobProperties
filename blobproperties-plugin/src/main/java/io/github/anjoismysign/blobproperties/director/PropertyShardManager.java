@@ -29,21 +29,6 @@ public record PropertyShardManager(
         @NotNull ConcurrentMap<String, PropertyShard> shards)
         implements PropertyManager {
 
-    private static PropertyShardManager INSTANCE;
-
-    public static PropertyShardManager getInstance() {
-        if (INSTANCE == null)
-            INSTANCE = new PropertyShardManager();
-        return INSTANCE;
-    }
-
-    /**
-     * Drops the instance so a re-enable doesn't keep using the old one.
-     */
-    public static void unload() {
-        INSTANCE = null;
-    }
-
     public PropertyShardManager() {
         this(new ConcurrentHashMap<>());
     }

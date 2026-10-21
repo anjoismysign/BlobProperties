@@ -16,7 +16,7 @@ public class PropertiesManagerDirector extends GenericManagerDirector<BlobProper
         legacyFileManager = new LegacyFileManager(this);
         addManager("ItemStackManager", new ItemStackManager(this));
         addManager("ConfigManager", new ConfigManager(this));
-        addManager("PartyManager", InternalPartyManager.getInstance(this));
+        addManager("PartyManager", new InternalPartyManager(this));
         addManager("ListenerManager", new ListenerManager(this));
         instantiateProprietorExpansion();
     }
@@ -24,7 +24,7 @@ public class PropertiesManagerDirector extends GenericManagerDirector<BlobProper
     @Override
     public void reload() {
         getListenerManager().reload();
-        PropertyShardManager.getInstance().reload();
+        getPlugin().getPropertyManager().reload();
     }
 
     public final InternalPartyManager getPublicPartyManager() {
@@ -41,10 +41,6 @@ public class PropertiesManagerDirector extends GenericManagerDirector<BlobProper
 
     public final ItemStackManager getItemStackManager() {
         return getManager("ItemStackManager", ItemStackManager.class);
-    }
-
-    public final PropertyShardManager getPropertyShardManager() {
-        return PropertyShardManager.getInstance();
     }
 
     public LegacyFileManager getLegacyFileManager() {

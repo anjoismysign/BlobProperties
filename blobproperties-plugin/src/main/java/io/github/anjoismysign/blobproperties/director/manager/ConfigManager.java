@@ -19,6 +19,8 @@ public class ConfigManager extends PropertiesManager {
 
     private final long pendingInvitesExpiration;
 
+    private final String outsideFallback;
+
     public ConfigManager(PropertiesManagerDirector director) {
         super(director);
         BlobPlugin main = getPlugin();
@@ -48,6 +50,7 @@ public class ConfigManager extends PropertiesManager {
                 this.formatter = new Generic();
                 break;
         }
+        this.outsideFallback = config.getString("Options.outsideFallback", "spawn");
     }
 
     public String format(double amount) {
@@ -60,5 +63,9 @@ public class ConfigManager extends PropertiesManager {
 
     public long getPendingInvitesExpiration() {
         return pendingInvitesExpiration;
+    }
+
+    public String getOutsideFallback() {
+        return outsideFallback;
     }
 }
