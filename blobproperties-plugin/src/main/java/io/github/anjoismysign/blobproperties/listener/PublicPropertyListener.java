@@ -23,6 +23,7 @@ import io.github.anjoismysign.blobproperties.entity.PropertyContainer;
 import io.github.anjoismysign.blobproperties.entity.ProprietorProfile;
 import io.github.anjoismysign.blobproperties.event.DoorInventoryEvent;
 import io.github.anjoismysign.blobproperties.library.InventoryUtil;
+import net.milkbowl.vault.profile.ProfileManagementQuitEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -39,7 +40,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -267,10 +267,12 @@ public class PublicPropertyListener extends ProprietorListener {
 
     /**
      * Removes the quitting player from their party, disbanding it if they host it.
-     * Runs at LOWEST so the proprietor account is still loaded.
+     * Runs at LOWEST so the proprietor profile is still loaded, since the account
+     * cruder drops it on this same event. It also runs before the profile provider
+     * saves the player's location.
      */
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onQuit(PlayerQuitEvent event) {
+    public void onQuit(ProfileManagementQuitEvent event) {
         ProprietorProfile proprietor = BlobProperties.getInstance().getProprietor(event.getPlayer());
         if (proprietor == null) {
             return;
