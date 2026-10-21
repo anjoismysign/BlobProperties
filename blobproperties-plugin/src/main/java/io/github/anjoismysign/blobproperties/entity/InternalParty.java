@@ -207,7 +207,11 @@ public class InternalParty implements Party {
 
     @Override
     public @NotNull Set<Player> getPlayersOutside() {
-        return allowed.stream().filter(inside::contains).map(Bukkit::getPlayer).collect(Collectors.toSet());
+        return allowed.stream()
+                .filter(uuid -> !inside.contains(uuid))
+                .map(Bukkit::getPlayer)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
     }
 
     private void forEachInsideProprietor(Consumer<ProprietorProfile> consumer) {
