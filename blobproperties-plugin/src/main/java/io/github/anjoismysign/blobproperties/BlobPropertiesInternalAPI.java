@@ -4,8 +4,8 @@ import io.github.anjoismysign.blobproperties.director.PropertiesManagerDirector;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.Openable;
-import org.bukkit.block.data.type.Door;
 import org.bukkit.entity.Player;
 
 public class BlobPropertiesInternalAPI {
@@ -33,7 +33,7 @@ public class BlobPropertiesInternalAPI {
         return director.getConfigManager().format(amount);
     }
 
-    public BlockFace doorFacing(Player player, Door door) {
+    public BlockFace doorFacing(Player player, Directional door) {
         float direction = player.getLocation().getYaw() + 180;
         BlockFace directionalFacing = door.getFacing();
         if (directionalFacing != BlockFace.NORTH && directionalFacing != BlockFace.SOUTH &&

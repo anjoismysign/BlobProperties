@@ -28,6 +28,8 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Bisected;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.type.Door;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -210,11 +212,12 @@ public class PublicPropertyListener extends ProprietorListener {
                 Vector velocity = player.getVelocity();
                 float yaw = playerLocation.getYaw();
                 float pitch = playerLocation.getPitch();
-                Door door = (Door) block.getBlockData();
-                if (door.getHalf() == Bisected.Half.TOP) {
+                BlockData blockData = block.getBlockData();
+                if (blockData instanceof Door door && door.getHalf() == Bisected.Half.TOP) {
                     block = block.getRelative(BlockFace.DOWN);
                 }
-                BlockFace facing = BlobPropertiesInternalAPI.getInstance().doorFacing(player, door);
+                // both Door and TrapDoor are Directional
+                BlockFace facing = BlobPropertiesInternalAPI.getInstance().doorFacing(player, (Directional) blockData);
                 Location location;
                 final @Nullable Property currentlyAt = proprietor.getCurrentlyAt();
                 boolean persistYawAndPitch = false;
