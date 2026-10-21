@@ -359,6 +359,33 @@ public class InternalParty implements Party {
         return true;
     }
 
+    /**
+     * Removes the guest from the party without teleporting them or changing their currentlyAt.
+     * Used when the guest switches profile: the profile provider already saved their
+     * location and moved them, and the new profile's session join sets their visibility.
+     *
+     * @param guest the guest
+     */
+    public void detach(@NotNull ProprietorProfile guest) {
+        Objects.requireNonNull(guest);
+        unallow(guest);
+        guest.setCurrentlyAttending(null);
+        inside.remove(guest.getAddress());
+        @Nullable Player guestPlayer = guest.getPlayer();
+        if (guestPlayer != null) {
+            BlobLibMessageAPI messageAPI = BlobLibMessageAPI.getInstance();
+            forEachAllowed(allowed -> messageAPI
+                    .getMessage("BlobProprietor.Other-Leaving", allowed)
+                    .modder()
+                    .replace("%player%", guestPlayer.getName())
+                    .get()
+                    .handle(allowed));
+        }
+        if (allowed.size() <= 1) {
+            disband();
+        }
+    }
+
     private void hideOwner() {
         Player player = owner.getPlayer();
         if (player == null || !player.isOnline())

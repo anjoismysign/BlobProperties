@@ -23,6 +23,7 @@ import io.github.anjoismysign.blobproperties.entity.PropertyContainer;
 import io.github.anjoismysign.blobproperties.entity.ProprietorProfile;
 import io.github.anjoismysign.blobproperties.event.DoorInventoryEvent;
 import io.github.anjoismysign.blobproperties.library.InventoryUtil;
+import net.milkbowl.vault.profile.ProfileLoadEvent;
 import net.milkbowl.vault.profile.ProfileManagementQuitEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -286,6 +287,30 @@ public class PublicPropertyListener extends ProprietorListener {
             party.disband(true);
         } else {
             party.depart(proprietor, true);
+        }
+    }
+
+    /**
+     * Cleans up the previous profile's party when switching profiles.
+     * Runs at LOWEST so the previous profile is still the loaded one.
+     * On a first join there's no previous profile, so nothing happens.
+     * The profile provider already saved the previous profile's location and
+     * moved the player, so nobody switching is teleported and currentlyAt is kept.
+     */
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onProfileSwitch(ProfileLoadEvent event) {
+        @Nullable ProprietorProfile previous = BlobProperties.getInstance().getProprietor(event.getPlayer());
+        if (previous == null) {
+            return;
+        }
+        @Nullable InternalParty party = previous.getCurrentlyAttending();
+        if (party == null) {
+            return;
+        }
+        if (party.getOwner().getAddress().equals(previous.getAddress())) {
+            party.disband(true);
+        } else {
+            party.detach(previous);
         }
     }
 
