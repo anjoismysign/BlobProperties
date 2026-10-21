@@ -303,6 +303,16 @@ public class PublicPropertyListener extends ProprietorListener {
         if (previous == null) {
             return;
         }
+        // the profile provider already moved the player to the new profile's location,
+        // stay hidden until the new profile's session join sets visibility
+        Player player = event.getPlayer();
+        Bukkit.getOnlinePlayers().forEach(online -> {
+            if (online.equals(player)) {
+                return;
+            }
+            online.hidePlayer(getPlugin(), player);
+            player.hidePlayer(getPlugin(), online);
+        });
         @Nullable InternalParty party = previous.getCurrentlyAttending();
         if (party == null) {
             return;
