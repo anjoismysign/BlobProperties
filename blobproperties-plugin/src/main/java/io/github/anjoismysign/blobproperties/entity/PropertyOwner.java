@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public record PropertyOwner(@NotNull Map<PropertyMetaType, Set<String>> properties) {
@@ -34,6 +35,8 @@ public record PropertyOwner(@NotNull Map<PropertyMetaType, Set<String>> properti
             set.addAll(getProperties(type.type())
                     .stream()
                     .map(identifier -> BlobPropertiesAPI.getInstance().getPropertyManager().getPropertyByMeta(type, identifier))
+                    // owned property may have been deleted or renamed
+                    .filter(Objects::nonNull)
                     .toList());
         }
         return set;
