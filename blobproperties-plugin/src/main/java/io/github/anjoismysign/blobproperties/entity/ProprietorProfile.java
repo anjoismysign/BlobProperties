@@ -194,8 +194,9 @@ public class ProprietorProfile implements Crudable, SerializableProprietor, Play
 
     public void setCurrentlyAttending(@Nullable Party party) {
         @Nullable InternalParty currentlyAttending = party == null ? null : (InternalParty) party;
-        if (currentlyAttending != null && getCurrentlyAttending() != null) {
-            InternalParty previous = getCurrentlyAttending();
+        InternalParty previous = getCurrentlyAttending();
+        // only leave the previous party if actually switching to another one
+        if (currentlyAttending != null && previous != null && previous != currentlyAttending) {
             previous.unallow(this);
             previous.stepOut(this, false, false);
         }

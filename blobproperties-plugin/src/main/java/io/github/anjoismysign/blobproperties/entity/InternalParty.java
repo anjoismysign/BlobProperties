@@ -10,7 +10,6 @@ import io.github.anjoismysign.blobproperties.api.Property;
 import io.github.anjoismysign.blobproperties.api.Proprietor;
 import io.github.anjoismysign.blobproperties.api.SerializableProprietor;
 import io.github.anjoismysign.blobproperties.director.InternalPartyManager;
-import io.github.anjoismysign.blobproperties.listener.PublicProprietorListener;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -295,23 +294,16 @@ public class InternalParty implements Party {
             }
             location = positionableLocation;
         }
+        if (!isAllowed(guest)) {
+            return false;
+        }
         guest.setCurrentlyAttending(this);
+        // already teleports, joins this party, sets currentlyAt and tracks the guest
         boolean successful = guest.stepIn(property, location);
         if (!successful) {
             guest.setCurrentlyAttending(null);
             return false;
         }
-
-        boolean allowed = stepIn(guest);
-        if (!allowed) {
-            return false;
-        }
-        if (!property.placeInside(guestPlayer, location)) {
-            removeParticipant(guestPlayer);
-            return false;
-        }
-        guest.setCurrentlyAt(property);
-        PublicProprietorListener.addToPublicTracking(guestPlayer);
         return true;
     }
 
