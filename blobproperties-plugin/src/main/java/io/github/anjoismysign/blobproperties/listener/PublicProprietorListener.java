@@ -3,6 +3,7 @@ package io.github.anjoismysign.blobproperties.listener;
 import io.github.anjoismysign.blobproperties.BlobProperties;
 import io.github.anjoismysign.blobproperties.api.Proprietor;
 import io.github.anjoismysign.blobproperties.director.PropertiesManagerDirector;
+import io.github.anjoismysign.blobproperties.entity.ProprietorProfile;
 import io.github.anjoismysign.blobproperties.event.ProprietorJoinSessionEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;
@@ -19,14 +20,11 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupArrowEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class PublicProprietorListener extends ProprietorListener {
     private static PublicProprietorListener instance;
-    private final Set<UUID> inPublicProperty;
 
     public static PublicProprietorListener getInstance(PropertiesManagerDirector director) {
         if (instance == null) {
@@ -44,25 +42,14 @@ public class PublicProprietorListener extends ProprietorListener {
         instance = null;
     }
 
-    public static void addToPublicTracking(Player player) {
-        instance.getManagerDirector().getListenerManager().getPublicProprietorListener()
-                .inPublicProperty.add(player.getUniqueId());
-    }
-
-    public static void removeFromPublicTracking(Player player) {
-        instance.getManagerDirector().getListenerManager().getPublicProprietorListener()
-                .inPublicProperty.remove(player.getUniqueId());
-    }
-
-    public static boolean isInPublicProperty(Player player) {
-        return instance.getManagerDirector().getListenerManager().getPublicProprietorListener()
-                .inPublicProperty.contains(player.getUniqueId());
-    }
-
     private PublicProprietorListener(PropertiesManagerDirector director) {
         super(director);
-        inPublicProperty = new HashSet<>();
         Bukkit.getPluginManager().registerEvents(this, getPlugin());
+    }
+
+    private boolean isInsideProperty(@NotNull Player player) {
+        @Nullable ProprietorProfile proprietor = getPlugin().getProprietor(player);
+        return proprietor != null && proprietor.isInsideProperty();
     }
 
     @EventHandler
@@ -81,10 +68,7 @@ public class PublicProprietorListener extends ProprietorListener {
         if (player == null){
             return;
         }
-        boolean joinedInside = proprietor.getCurrentlyAt() != null;
-        if (joinedInside) {
-            addToPublicTracking(player);
-        }
+        boolean joinedInside = isInsideProperty(player);
         Bukkit.getOnlinePlayers().forEach(onlinePlayer -> {
             if (onlinePlayer.equals(player)) {
                 return;
@@ -94,11 +78,11 @@ public class PublicProprietorListener extends ProprietorListener {
                 onlinePlayer.showPlayer(getPlugin(), player);
             }
             // the joined player only sees others that are outside a property
-            Proprietor onlineProprietor = BlobProperties.getInstance().getProprietor(onlinePlayer);
+            ProprietorProfile onlineProprietor = BlobProperties.getInstance().getProprietor(onlinePlayer);
             if (onlineProprietor == null) {
                 return;
             }
-            if (onlineProprietor.getCurrentlyAt() != null) {
+            if (onlineProprietor.isInsideProperty()) {
                 return;
             }
             player.showPlayer(getPlugin(), onlinePlayer);
@@ -110,9 +94,7 @@ public class PublicProprietorListener extends ProprietorListener {
         if (event.getCause() != PlayerTeleportEvent.TeleportCause.CONSUMABLE_EFFECT) {
             return;
         }
-        Player player = event.getPlayer();
-        UUID uuid = player.getUniqueId();
-        if (!inPublicProperty.contains(uuid)) {
+        if (!isInsideProperty(event.getPlayer())) {
             return;
         }
         event.setCancelled(true);
@@ -120,18 +102,14 @@ public class PublicProprietorListener extends ProprietorListener {
 
     @EventHandler
     public void onDrop(PlayerDropItemEvent event) {
-        Player player = event.getPlayer();
-        UUID uuid = player.getUniqueId();
-        if (!inPublicProperty.contains(uuid))
+        if (!isInsideProperty(event.getPlayer()))
             return;
         event.setCancelled(true);
     }
 
     @EventHandler
     public void onPickupArrow(PlayerPickupArrowEvent event) {
-        Player player = event.getPlayer();
-        UUID uuid = player.getUniqueId();
-        if (!inPublicProperty.contains(uuid))
+        if (!isInsideProperty(event.getPlayer()))
             return;
         event.setCancelled(true);
     }
@@ -140,45 +118,35 @@ public class PublicProprietorListener extends ProprietorListener {
     public void onPickupItem(EntityPickupItemEvent event) {
         if (event.getEntityType() != EntityType.PLAYER)
             return;
-        Player player = (Player) event.getEntity();
-        UUID uuid = player.getUniqueId();
-        if (!inPublicProperty.contains(uuid))
+        if (!isInsideProperty((Player) event.getEntity()))
             return;
         event.setCancelled(true);
     }
 
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
-        Player player = event.getPlayer();
-        UUID uuid = player.getUniqueId();
-        if (!inPublicProperty.contains(uuid))
+        if (!isInsideProperty(event.getPlayer()))
             return;
         event.setCancelled(true);
     }
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-        Player player = event.getPlayer();
-        UUID uuid = player.getUniqueId();
-        if (!inPublicProperty.contains(uuid))
+        if (!isInsideProperty(event.getPlayer()))
             return;
         event.setCancelled(true);
     }
 
     @EventHandler
     public void onInteractEntity(PlayerInteractEntityEvent event) {
-        Player player = event.getPlayer();
-        UUID uuid = player.getUniqueId();
-        if (!inPublicProperty.contains(uuid))
+        if (!isInsideProperty(event.getPlayer()))
             return;
         event.setCancelled(true);
     }
 
     @EventHandler
     public void onArmorStandManipulate(PlayerArmorStandManipulateEvent event) {
-        Player player = event.getPlayer();
-        UUID uuid = player.getUniqueId();
-        if (!inPublicProperty.contains(uuid))
+        if (!isInsideProperty(event.getPlayer()))
             return;
         event.setCancelled(true);
     }
@@ -186,7 +154,7 @@ public class PublicProprietorListener extends ProprietorListener {
     @EventHandler
     public void onPlayerShoot(ProjectileLaunchEvent event) {
         if (event.getEntity().getShooter() instanceof Player player) {
-            if (!inPublicProperty.contains(player.getUniqueId()))
+            if (!isInsideProperty(player))
                 return;
             event.setCancelled(true);
         }
@@ -194,7 +162,7 @@ public class PublicProprietorListener extends ProprietorListener {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
-        if (!inPublicProperty.contains(event.getEntity().getUniqueId()))
+        if (!isInsideProperty(event.getEntity()))
             return;
         event.setKeepInventory(true);
         event.setKeepLevel(true);

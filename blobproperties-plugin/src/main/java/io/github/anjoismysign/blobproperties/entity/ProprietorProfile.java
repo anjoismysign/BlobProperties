@@ -11,7 +11,6 @@ import io.github.anjoismysign.blobproperties.api.SerializableProprietor;
 import io.github.anjoismysign.blobproperties.event.ProprietorJoinSessionEvent;
 import io.github.anjoismysign.blobproperties.event.ProprietorStepInEvent;
 import io.github.anjoismysign.blobproperties.event.ProprietorStepOutEvent;
-import io.github.anjoismysign.blobproperties.listener.PublicProprietorListener;
 import io.github.anjoismysign.psa.PostLoadable;
 import io.github.anjoismysign.psa.PreUpdatable;
 import io.github.anjoismysign.psa.crud.Crudable;
@@ -135,22 +134,23 @@ public class ProprietorProfile implements Crudable, SerializableProprietor, Play
     }
 
     /**
+     * Cheaper than {@code getCurrentlyAt() != null}, which resolves the property.
+     * Still true if the property got deleted while inside.
+     *
+     * @return true if inside a property
+     */
+    public boolean isInsideProperty() {
+        return currentlyAt != null;
+    }
+
+    /**
      * Updates the current property.
-     * Also keeps {@link PublicProprietorListener}'s tracking in sync.
      *
      * @param currentlyAt The current property. null if not inside a property.
      */
     public void setCurrentlyAt(@Nullable Property currentlyAt) {
         @Nullable PropertyReference reference = PropertyReference.ofProperty(currentlyAt);
         this.currentlyAt = reference;
-        @Nullable Player player = getPlayer();
-        if (player != null) {
-            if (reference == null) {
-                PublicProprietorListener.removeFromPublicTracking(player);
-            } else {
-                PublicProprietorListener.addToPublicTracking(player);
-            }
-        }
         if (reference != null) {
             InternalProperty property = reference.toInternalProperty();
             if (property == null)
