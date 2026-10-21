@@ -371,23 +371,23 @@ public class InternalParty implements Party {
      * Used when the guest's profile is being saved (quit or profile switch): the player
      * can't be teleported anymore, and the next session join sets their visibility.
      *
-     * @param guest the guest
+     * @param guest       the guest
+     * @param guestPlayer the guest's player. Passed in since {@link ProprietorProfile#getPlayer()}
+     *                    is null once the player is disconnecting
      */
-    public void detach(@NotNull ProprietorProfile guest) {
+    public void detach(@NotNull ProprietorProfile guest, @NotNull Player guestPlayer) {
         Objects.requireNonNull(guest);
+        Objects.requireNonNull(guestPlayer);
         unallow(guest);
         guest.setCurrentlyAttending(null);
         inside.remove(guest.getAddress());
-        @Nullable Player guestPlayer = guest.getPlayer();
-        if (guestPlayer != null) {
-            BlobLibMessageAPI messageAPI = BlobLibMessageAPI.getInstance();
-            forEachAllowed(allowed -> messageAPI
-                    .getMessage("BlobProprietor.Other-Leaving", allowed)
-                    .modder()
-                    .replace("%player%", guestPlayer.getName())
-                    .get()
-                    .handle(allowed));
-        }
+        BlobLibMessageAPI messageAPI = BlobLibMessageAPI.getInstance();
+        forEachAllowed(allowed -> messageAPI
+                .getMessage("BlobProprietor.Other-Leaving", allowed)
+                .modder()
+                .replace("%player%", guestPlayer.getName())
+                .get()
+                .handle(allowed));
         scheduleDisbandIfEmpty();
     }
 

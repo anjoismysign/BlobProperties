@@ -290,7 +290,7 @@ public class PublicPropertyListener extends ProprietorListener {
             // host is restored where they disconnected, guests are kicked outside
             party.disband(true);
         } else {
-            kickSavedGuest(party, proprietor);
+            kickSavedGuest(party, proprietor, event.getPlayer());
         }
     }
 
@@ -324,7 +324,7 @@ public class PublicPropertyListener extends ProprietorListener {
         if (party.getOwner().getAddress().equals(previous.getAddress())) {
             party.disband(true);
         } else {
-            kickSavedGuest(party, previous);
+            kickSavedGuest(party, previous, player);
         }
     }
 
@@ -333,9 +333,11 @@ public class PublicPropertyListener extends ProprietorListener {
      * and from the property if they're inside it. The player can't be teleported anymore,
      * so they're placed outside the next time this profile loads.
      */
-    private void kickSavedGuest(@NotNull InternalParty party, @NotNull ProprietorProfile guest) {
+    private void kickSavedGuest(@NotNull InternalParty party,
+                                @NotNull ProprietorProfile guest,
+                                @NotNull Player player) {
         boolean insidePartyProperty = party.getProperty().equals(guest.getCurrentlyAt());
-        party.detach(guest);
+        party.detach(guest, player);
         if (insidePartyProperty) {
             guest.ejectOnNextLoad();
         }
