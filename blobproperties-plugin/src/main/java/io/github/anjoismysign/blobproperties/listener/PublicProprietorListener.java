@@ -69,23 +69,29 @@ public class PublicProprietorListener extends ProprietorListener {
             return;
         }
         boolean joinedInside = isInsideProperty(player);
+        // set both directions explicitly: switching profiles doesn't go through onJoin,
+        // so the previous profile's visibility is still applied
         Bukkit.getOnlinePlayers().forEach(onlinePlayer -> {
             if (onlinePlayer.equals(player)) {
                 return;
             }
             // others only see the joined player if they are outside a property
-            if (!joinedInside) {
+            if (joinedInside) {
+                onlinePlayer.hidePlayer(getPlugin(), player);
+            } else {
                 onlinePlayer.showPlayer(getPlugin(), player);
             }
             // the joined player only sees others that are outside a property
             ProprietorProfile onlineProprietor = BlobProperties.getInstance().getProprietor(onlinePlayer);
             if (onlineProprietor == null) {
+                // not loaded yet, their own session join handles it
                 return;
             }
             if (onlineProprietor.isInsideProperty()) {
-                return;
+                player.hidePlayer(getPlugin(), onlinePlayer);
+            } else {
+                player.showPlayer(getPlugin(), onlinePlayer);
             }
-            player.showPlayer(getPlugin(), onlinePlayer);
         });
     }
 
