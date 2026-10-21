@@ -203,8 +203,10 @@ public class PublicPropertyListener extends ProprietorListener {
             }
             final @Nullable Party attending = proprietor.getCurrentlyAttending();
             final @Nullable InternalProperty attendingProperty = attending == null ? null : (InternalProperty) attending.getProperty();
+            // whoever is inside must always be able to leave, even if no longer owner
+            final boolean insideThis = property.equals(proprietor.getCurrentlyAt());
             final boolean notOwner = !proprietor.ownsProperty(property);
-            if (notOwner && (attendingProperty == null || !attendingProperty.equals(property))) {
+            if (!insideThis && notOwner && (attendingProperty == null || !attendingProperty.equals(property))) {
                 DoorInventoryEvent doorInventoryEvent = new DoorInventoryEvent(proprietor, property);
                 Bukkit.getPluginManager().callEvent(doorInventoryEvent);
                 if (doorInventoryEvent.isCancelled()){
