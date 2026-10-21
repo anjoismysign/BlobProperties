@@ -66,7 +66,22 @@ public class InternalParty implements Party {
      * It removes the party from the {@link InternalPartyManager}.
      */
     public void disband() {
+        disband(false);
+    }
+
+    /**
+     * Will disband the party and teleport participants outside the property.
+     * It removes the party from the {@link InternalPartyManager}.
+     *
+     * @param keepOwner whether the owner stays where they are, keeping their currentlyAt.
+     *                  Used when the owner disconnects, so their profile is restored
+     *                  at the same location, inside or outside the property.
+     */
+    public void disband(boolean keepOwner) {
         forEachInsideProprietor(proprietor -> {
+            if (keepOwner && proprietor.getAddress().equals(owner.getAddress())) {
+                return;
+            }
             ((InternalProperty) getProperty()).placeOutside(Objects.requireNonNull(proprietor.getPlayer()), null);
             stepOut(proprietor, true, false);
             proprietor.setCurrentlyAt(null);

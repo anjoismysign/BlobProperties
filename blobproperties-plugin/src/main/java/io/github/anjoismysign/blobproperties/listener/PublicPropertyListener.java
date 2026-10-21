@@ -282,7 +282,8 @@ public class PublicPropertyListener extends ProprietorListener {
             return;
         }
         if (party.getOwner().getAddress().equals(proprietor.getAddress())) {
-            party.disband();
+            // host is restored where they disconnected, guests are kicked outside
+            party.disband(true);
         } else {
             party.depart(proprietor, true);
         }
