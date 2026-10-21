@@ -91,8 +91,16 @@ public class ProprietorProfile implements Crudable, SerializableProprietor, Play
         return playerDecorator == null ? null : playerDecorator.lookup();
     }
 
+    /**
+     * @return the UUID of the player this account belongs to
+     * @throws IllegalStateException if the account isn't attached to its player yet,
+     *                               which happens while it's still being loaded
+     */
     @Override
     public UUID getAddress() {
+        if (playerDecorator == null) {
+            throw new IllegalStateException("ProprietorProfile '" + identification + "' isn't attached to a player yet");
+        }
         return playerDecorator.getUniqueId();
     }
 

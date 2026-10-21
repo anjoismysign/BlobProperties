@@ -62,7 +62,10 @@ public class BlobProperties
     @Override
     public void onDisable(){
         super.onDisable();
-        accountCruder.shutdown();
+        // null if the plugin got disabled before the scheduled task in onEnable ran
+        if (accountCruder != null) {
+            accountCruder.shutdown();
+        }
     }
 
     @Override
@@ -95,9 +98,28 @@ public class BlobProperties
         return propertyIdentityManagers.get(type);
     }
 
+    /**
+     * Gets the proprietor (account) of an online player.
+     * <p>
+     * It might return null because:
+     * <ul>
+     *     <li>The account cruder is created one tick after the plugin is enabled,
+     *     so there are no accounts before that tick.</li>
+     *     <li>Accounts are loaded asynchronously after the player joins,
+     *     so it's not available until loading finishes.</li>
+     *     <li>The account is no longer available after it gets saved and unloaded
+     *     when the player quits.</li>
+     * </ul>
+     *
+     * @param player the player
+     * @return the proprietor, or null if not loaded (see above)
+     */
     @Override
     @Nullable
     public ProprietorProfile getProprietor(@NotNull Player player){
+        if (accountCruder == null) {
+            return null;
+        }
         return accountCruder.getAccount(player);
     }
 
