@@ -51,7 +51,7 @@ public class PropertiesManagerDirector extends GenericManagerDirector<BlobProper
         ProprietorPlaceholderExpansion expansion = new ProprietorPlaceholderExpansion(this);
         if (!isPlaceholderAPIEnabled())
             return;
-        BlobPHExpansion phExpansion = new BlobPHExpansion(this.getPlugin(), "proprietor");
+        BlobPHExpansion phExpansion = new BlobPHExpansion(this.getPlugin());
         expansion.consumer().accept(phExpansion);
     }
 }
